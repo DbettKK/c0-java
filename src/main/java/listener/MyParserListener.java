@@ -82,7 +82,11 @@ public class MyParserListener extends scratchBaseListener {
     public void enterLet_decl_stmt(scratchParser.Let_decl_stmtContext ctx) {
         List<SymbolTable> tableList = symMap.get(currentFunc);
         SymbolTable table = tableList.get(currentBlock);
-        table.put(ctx.IDENT().getText(), new SymbolEntry(
+        String ident = ctx.IDENT().getText();
+        if (table.getCurTable(ident) != null) {
+            throw new RuntimeException("重复声明变量");
+        }
+        table.put(ident, new SymbolEntry(
                false,
                ctx.ASSIGN() != null,
                 table.getOffset(),
@@ -93,8 +97,12 @@ public class MyParserListener extends scratchBaseListener {
     @Override
     public void enterConst_decl_stmt(scratchParser.Const_decl_stmtContext ctx) {
         List<SymbolTable> tableList = symMap.get(currentFunc);
-        SymbolTable table = tableList.get(tableList.size() - 1);
-        table.put(ctx.IDENT().getText(), new SymbolEntry(
+        SymbolTable table = tableList.get(currentBlock);
+        String ident = ctx.IDENT().getText();
+        if (table.getCurTable(ident) != null) {
+            throw new RuntimeException("重复声明常量");
+        }
+        table.put(ident, new SymbolEntry(
                 true,
                 true,
                 table.getOffset(),

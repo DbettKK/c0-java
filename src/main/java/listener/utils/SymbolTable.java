@@ -26,7 +26,11 @@ public class SymbolTable {
         table.put(s, id);
     }
 
-    public SymbolEntry get(String s) {
+    public SymbolEntry getCurTable(String s) {
+        return table.get(s);
+    }
+
+    public SymbolEntry getChainTable(String s) {
         for (SymbolTable e = this; e != null; e = e.prevTable) {
             SymbolEntry found = e.table.get(s);
             if (found != null) return found;
@@ -39,8 +43,8 @@ public class SymbolTable {
      * @param s 变量名
      * @return 存在为true 不存在为false
      */
-    public boolean check(String s) {
-        if (get(s) != null) return true;
+    public boolean checkCurTable(String s) {
+        if (getCurTable(s) != null) return true;
         return false;
     }
 
