@@ -49,6 +49,12 @@ public interface scratchVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpr_stmt(scratchParser.Expr_stmtContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link scratchParser#decl_stmt}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDecl_stmt(scratchParser.Decl_stmtContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link scratchParser#let_decl_stmt}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -60,12 +66,6 @@ public interface scratchVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitConst_decl_stmt(scratchParser.Const_decl_stmtContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link scratchParser#decl_stmt}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDecl_stmt(scratchParser.Decl_stmtContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link scratchParser#if_stmt}.
 	 * @param ctx the parse tree
@@ -102,6 +102,12 @@ public interface scratchVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitExpr(scratchParser.ExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link scratchParser#bool_expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBool_expr(scratchParser.Bool_exprContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link scratchParser#ari_expr}.
 	 * @param ctx the parse tree

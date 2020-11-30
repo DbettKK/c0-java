@@ -16,7 +16,7 @@ public class Main {
             System.out.println(str);
         }
     }
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, RecognitionException {
         File file = new File(args[0]);
         FileInputStream inputStream = new FileInputStream(file);
         ANTLRInputStream input = new ANTLRInputStream(inputStream);

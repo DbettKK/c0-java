@@ -90,6 +90,18 @@ public class scratchBaseListener implements scratchListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterDecl_stmt(scratchParser.Decl_stmtContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDecl_stmt(scratchParser.Decl_stmtContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterLet_decl_stmt(scratchParser.Let_decl_stmtContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -109,18 +121,6 @@ public class scratchBaseListener implements scratchListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitConst_decl_stmt(scratchParser.Const_decl_stmtContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterDecl_stmt(scratchParser.Decl_stmtContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitDecl_stmt(scratchParser.Decl_stmtContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -193,6 +193,18 @@ public class scratchBaseListener implements scratchListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExpr(scratchParser.ExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBool_expr(scratchParser.Bool_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBool_expr(scratchParser.Bool_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

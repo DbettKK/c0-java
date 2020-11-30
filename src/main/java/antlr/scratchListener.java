@@ -70,6 +70,16 @@ public interface scratchListener extends ParseTreeListener {
 	 */
 	void exitExpr_stmt(scratchParser.Expr_stmtContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link scratchParser#decl_stmt}.
+	 * @param ctx the parse tree
+	 */
+	void enterDecl_stmt(scratchParser.Decl_stmtContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link scratchParser#decl_stmt}.
+	 * @param ctx the parse tree
+	 */
+	void exitDecl_stmt(scratchParser.Decl_stmtContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link scratchParser#let_decl_stmt}.
 	 * @param ctx the parse tree
 	 */
@@ -89,16 +99,6 @@ public interface scratchListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitConst_decl_stmt(scratchParser.Const_decl_stmtContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link scratchParser#decl_stmt}.
-	 * @param ctx the parse tree
-	 */
-	void enterDecl_stmt(scratchParser.Decl_stmtContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link scratchParser#decl_stmt}.
-	 * @param ctx the parse tree
-	 */
-	void exitDecl_stmt(scratchParser.Decl_stmtContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link scratchParser#if_stmt}.
 	 * @param ctx the parse tree
@@ -159,6 +159,16 @@ public interface scratchListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExpr(scratchParser.ExprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link scratchParser#bool_expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterBool_expr(scratchParser.Bool_exprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link scratchParser#bool_expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitBool_expr(scratchParser.Bool_exprContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link scratchParser#ari_expr}.
 	 * @param ctx the parse tree
