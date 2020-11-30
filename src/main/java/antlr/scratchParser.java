@@ -196,6 +196,8 @@ public class scratchParser extends Parser {
 	}
 
 	public static class Function_paramContext extends ParserRuleContext {
+		public Token isConst;
+		public Token ty;
 		public TerminalNode IDENT() { return getToken(scratchParser.IDENT, 0); }
 		public Function_paramContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -229,7 +231,7 @@ public class scratchParser extends Parser {
 			if (_la==T__0) {
 				{
 				setState(61);
-				match(T__0);
+				((Function_paramContext)_localctx).isConst = match(T__0);
 				}
 			}
 
@@ -238,9 +240,10 @@ public class scratchParser extends Parser {
 			setState(65);
 			match(T__1);
 			setState(66);
+			((Function_paramContext)_localctx).ty = _input.LT(1);
 			_la = _input.LA(1);
 			if ( !(_la==T__2 || _la==T__3) ) {
-			_errHandler.recoverInline(this);
+				((Function_paramContext)_localctx).ty = (Token)_errHandler.recoverInline(this);
 			}
 			else {
 				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -325,6 +328,7 @@ public class scratchParser extends Parser {
 	}
 
 	public static class FunctionContext extends ParserRuleContext {
+		public Token ty;
 		public TerminalNode IDENT() { return getToken(scratchParser.IDENT, 0); }
 		public Block_stmtContext block_stmt() {
 			return getRuleContext(Block_stmtContext.class,0);
@@ -379,9 +383,10 @@ public class scratchParser extends Parser {
 			setState(83);
 			match(T__8);
 			setState(84);
+			((FunctionContext)_localctx).ty = _input.LT(1);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__2) | (1L << T__3) | (1L << T__9))) != 0)) ) {
-			_errHandler.recoverInline(this);
+				((FunctionContext)_localctx).ty = (Token)_errHandler.recoverInline(this);
 			}
 			else {
 				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -638,6 +643,7 @@ public class scratchParser extends Parser {
 	}
 
 	public static class Let_decl_stmtContext extends ParserRuleContext {
+		public Token ty;
 		public TerminalNode IDENT() { return getToken(scratchParser.IDENT, 0); }
 		public TerminalNode ASSIGN() { return getToken(scratchParser.ASSIGN, 0); }
 		public ExprContext expr() {
@@ -676,9 +682,10 @@ public class scratchParser extends Parser {
 			setState(105);
 			match(T__1);
 			setState(106);
+			((Let_decl_stmtContext)_localctx).ty = _input.LT(1);
 			_la = _input.LA(1);
 			if ( !(_la==T__2 || _la==T__3) ) {
-			_errHandler.recoverInline(this);
+				((Let_decl_stmtContext)_localctx).ty = (Token)_errHandler.recoverInline(this);
 			}
 			else {
 				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -713,6 +720,7 @@ public class scratchParser extends Parser {
 	}
 
 	public static class Const_decl_stmtContext extends ParserRuleContext {
+		public Token ty;
 		public TerminalNode IDENT() { return getToken(scratchParser.IDENT, 0); }
 		public TerminalNode ASSIGN() { return getToken(scratchParser.ASSIGN, 0); }
 		public ExprContext expr() {
@@ -751,9 +759,10 @@ public class scratchParser extends Parser {
 			setState(115);
 			match(T__1);
 			setState(116);
+			((Const_decl_stmtContext)_localctx).ty = _input.LT(1);
 			_la = _input.LA(1);
 			if ( !(_la==T__2 || _la==T__3) ) {
-			_errHandler.recoverInline(this);
+				((Const_decl_stmtContext)_localctx).ty = (Token)_errHandler.recoverInline(this);
 			}
 			else {
 				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -1720,6 +1729,7 @@ public class scratchParser extends Parser {
 	}
 
 	public static class CharacterContext extends ParserRuleContext {
+		public Token cl;
 		public TerminalNode Escape_sequence() { return getToken(scratchParser.Escape_sequence, 0); }
 		public CharacterContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1759,9 +1769,10 @@ public class scratchParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(234);
+				((CharacterContext)_localctx).cl = _input.LT(1);
 				_la = _input.LA(1);
 				if ( _la <= 0 || (_la==T__20 || _la==T__21) ) {
-				_errHandler.recoverInline(this);
+					((CharacterContext)_localctx).cl = (Token)_errHandler.recoverInline(this);
 				}
 				else {
 					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -1784,6 +1795,7 @@ public class scratchParser extends Parser {
 	}
 
 	public static class Char_literalContext extends ParserRuleContext {
+		public Token cl;
 		public TerminalNode Escape_sequence() { return getToken(scratchParser.Escape_sequence, 0); }
 		public Char_literalContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1825,9 +1837,10 @@ public class scratchParser extends Parser {
 			case 2:
 				{
 				setState(239);
+				((Char_literalContext)_localctx).cl = _input.LT(1);
 				_la = _input.LA(1);
 				if ( _la <= 0 || (_la==T__21 || _la==T__22) ) {
-				_errHandler.recoverInline(this);
+					((Char_literalContext)_localctx).cl = (Token)_errHandler.recoverInline(this);
 				}
 				else {
 					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
