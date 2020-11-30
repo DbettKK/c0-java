@@ -210,6 +210,36 @@ public interface scratchListener extends ParseTreeListener {
 	 */
 	void exitCall_stdlib(scratchParser.Call_stdlibContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link scratchParser#str}.
+	 * @param ctx the parse tree
+	 */
+	void enterStr(scratchParser.StrContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link scratchParser#str}.
+	 * @param ctx the parse tree
+	 */
+	void exitStr(scratchParser.StrContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link scratchParser#character}.
+	 * @param ctx the parse tree
+	 */
+	void enterCharacter(scratchParser.CharacterContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link scratchParser#character}.
+	 * @param ctx the parse tree
+	 */
+	void exitCharacter(scratchParser.CharacterContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link scratchParser#char_literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterChar_literal(scratchParser.Char_literalContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link scratchParser#char_literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitChar_literal(scratchParser.Char_literalContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link scratchParser#param}.
 	 * @param ctx the parse tree
 	 */

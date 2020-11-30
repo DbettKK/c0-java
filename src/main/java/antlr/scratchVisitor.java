@@ -133,6 +133,24 @@ public interface scratchVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCall_stdlib(scratchParser.Call_stdlibContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link scratchParser#str}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStr(scratchParser.StrContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link scratchParser#character}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCharacter(scratchParser.CharacterContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link scratchParser#char_literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitChar_literal(scratchParser.Char_literalContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link scratchParser#param}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
