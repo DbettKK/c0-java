@@ -1,0 +1,6 @@
+fn main() -> void {
+    let i : int;
+    i = 4;
+    return;
+}
+let i : int = 4;
