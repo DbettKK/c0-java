@@ -1,0 +1,6 @@
+# gradle 好大
+FROM maven:jdk14
+WORKDIR /app
+COPY pom.xml c0-java.iml /app/
+COPY src /app/src
+RUN maven package
