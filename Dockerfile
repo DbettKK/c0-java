@@ -15,5 +15,5 @@ RUN export PATH=apache-maven-3.6.3/bin:$PATH
 RUN export PATH=/usr/local/bin/apache-maven-3.6.3/bin:$PATH
 RUN ln -s /usr/local/bin/apache-maven-3.6.3/bin/mvn /usr/local/bin/mv
 # RUN ls -l /usr/local/bin
-# RUN echo $PATH
+RUN echo $PATH
 RUN mvn package
