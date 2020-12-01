@@ -151,6 +151,8 @@ public class MyParserListener extends scratchBaseListener {
         if (ctx.expr().func_expr() != null) {
             // 函数赋值判断
             Function.funcAssign(paramOrLoc.getType(), ctx.expr().func_expr(), funcTable);
+        } else if (ctx.expr().assign_expr() != null) {
+            throw new RuntimeException("assign-void-by-ASSIGN_EXPR");
         }
 
     }

@@ -198,18 +198,6 @@ public class scratchBaseListener implements scratchListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpr_new(scratchParser.Expr_newContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExpr_new(scratchParser.Expr_newContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterAs_expr(scratchParser.As_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}

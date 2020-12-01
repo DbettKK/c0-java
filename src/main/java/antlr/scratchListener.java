@@ -160,16 +160,6 @@ public interface scratchListener extends ParseTreeListener {
 	 */
 	void exitExpr(scratchParser.ExprContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link scratchParser#expr_new}.
-	 * @param ctx the parse tree
-	 */
-	void enterExpr_new(scratchParser.Expr_newContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link scratchParser#expr_new}.
-	 * @param ctx the parse tree
-	 */
-	void exitExpr_new(scratchParser.Expr_newContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link scratchParser#as_expr}.
 	 * @param ctx the parse tree
 	 */
