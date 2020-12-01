@@ -143,7 +143,9 @@ public class MyParserListener extends scratchBaseListener {
         SymbolTable table = tableList.get(currentBlock);
         if (ctx.IDENT() != null) {
             String ident = ctx.IDENT().getText();
-            if (table.getChainTable(ident) == null && funcTable.get(currentFunc).getParamMap().get(ident) == null) {
+            //System.out.println(ident);
+            if (table.getChainTable(ident) == null && !ident.equals("break") && !ident.equals("continue")
+                    && funcTable.get(currentFunc).getParamMap().get(ident) == null) {
                 throw new RuntimeException("undefined-var/const-error");
             }
         }
