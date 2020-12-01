@@ -2,6 +2,7 @@ package listener.utils;
 
 import antlr.scratchParser;
 import listener.MyParserListener;
+import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -64,7 +65,26 @@ public class Utils {
                 //System.out.println(tree.getChild(0).getText());
                 return;
             }
-            PostOrder(tree.getChild(index), queue);
+            if (tree.getChild(0) instanceof TerminalNode &&
+                    tree.getChild(0).getText().equals("-") &&
+                    tree.getChild(tree.getChildCount() - 1).getText().equals("-")){
+                System.out.println("--|"+tree.getChild(0).getText());
+                queue.add((TerminalNode) tree.getChild(0));
+                return;
+            }
+            if (tree.getChild(0) instanceof scratchParser.NagContext) {
+                scratchParser.FactorContext factor = (scratchParser.FactorContext) tree;
+                scratchParser.NagContext nag = (scratchParser.NagContext) tree.getChild(0);
+
+                /*int sum = nag.children.size();
+                if (sum % 2 == 0) {
+                    childNum -= sum;
+                    index = index + sum;
+                } else {
+                    childNum = childNum - sum + 2;
+                    index = index + sum - 2;
+                }*/
+            }else PostOrder(tree.getChild(index), queue);
             while (index + 1 < childNum) {
                 index += 2;
                 PostOrder(tree.getChild(index), queue);

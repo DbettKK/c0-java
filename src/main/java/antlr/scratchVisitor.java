@@ -169,9 +169,9 @@ public interface scratchVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFactor(scratchParser.FactorContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link scratchParser#factor1}.
+	 * Visit a parse tree produced by {@link scratchParser#nag}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFactor1(scratchParser.Factor1Context ctx);
+	T visitNag(scratchParser.NagContext ctx);
 }

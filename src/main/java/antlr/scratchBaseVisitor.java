@@ -201,5 +201,5 @@ public class scratchBaseVisitor<T> extends AbstractParseTreeVisitor<T> implement
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitFactor1(scratchParser.Factor1Context ctx) { return visitChildren(ctx); }
+	@Override public T visitNag(scratchParser.NagContext ctx) { return visitChildren(ctx); }
 }

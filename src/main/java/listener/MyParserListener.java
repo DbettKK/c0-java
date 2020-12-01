@@ -169,9 +169,9 @@ public class MyParserListener extends scratchBaseListener {
             Queue<TerminalNode> queue = new ArrayDeque<>();
             Utils.PostOrder(ctx, queue);
             Utils.cleanParenInQueue(queue);
-            /*for (TerminalNode terminalNode : queue) {
+            for (TerminalNode terminalNode : queue) {
                 System.out.println(terminalNode.getText());
-            }*/
+            }
             Type type = Utils.handleExprStack(queue);
 
             //System.out.println(type);

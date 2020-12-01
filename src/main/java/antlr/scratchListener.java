@@ -270,13 +270,13 @@ public interface scratchListener extends ParseTreeListener {
 	 */
 	void exitFactor(scratchParser.FactorContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link scratchParser#factor1}.
+	 * Enter a parse tree produced by {@link scratchParser#nag}.
 	 * @param ctx the parse tree
 	 */
-	void enterFactor1(scratchParser.Factor1Context ctx);
+	void enterNag(scratchParser.NagContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link scratchParser#factor1}.
+	 * Exit a parse tree produced by {@link scratchParser#nag}.
 	 * @param ctx the parse tree
 	 */
-	void exitFactor1(scratchParser.Factor1Context ctx);
+	void exitNag(scratchParser.NagContext ctx);
 }

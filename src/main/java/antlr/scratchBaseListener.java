@@ -330,13 +330,13 @@ public class scratchBaseListener implements scratchListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFactor1(scratchParser.Factor1Context ctx) { }
+	@Override public void enterNag(scratchParser.NagContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFactor1(scratchParser.Factor1Context ctx) { }
+	@Override public void exitNag(scratchParser.NagContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
