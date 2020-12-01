@@ -198,18 +198,6 @@ public class scratchBaseListener implements scratchListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAs_expr(scratchParser.As_exprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitAs_expr(scratchParser.As_exprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterBool_expr(scratchParser.Bool_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -337,6 +325,18 @@ public class scratchBaseListener implements scratchListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFactor(scratchParser.FactorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFactor1(scratchParser.Factor1Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFactor1(scratchParser.Factor1Context ctx) { }
 
 	/**
 	 * {@inheritDoc}

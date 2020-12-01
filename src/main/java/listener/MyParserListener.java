@@ -5,23 +5,36 @@ import antlr.scratchListener;
 import antlr.scratchParser;
 import listener.utils.*;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MyParserListener extends scratchBaseListener {
-    private final Map<String, Function> funcTable = new HashMap<>();
+    private static final Map<String, Function> funcTable = new HashMap<>();
+
     private int funcOffset = 0;
     // 全局符号表
     //private final SymbolTable symbolTable = new SymbolTable(null, "#start");
-    private String currentFunc = "#start";
-    private int currentBlock = 0;
-    private final Map<String, List<SymbolTable>> symMap = new HashMap<>();
+    private static String currentFunc = "#start";
+    private static int currentBlock = 0;
+    private static final Map<String, List<SymbolTable>> symMap = new HashMap<>();
     private boolean funcFlag;
+
+    public static Map<String, Function> getFuncTable() {
+        return funcTable;
+    }
+
+    public static SymbolTable getCurrentSymbolTable() {
+        return symMap.get(currentFunc).get(currentBlock);
+    }
+
+    public static Function getCurrentFunction() {
+        return funcTable.get(currentFunc);
+    }
+
     @Override
     public void enterProgram(scratchParser.ProgramContext ctx) {
         List<SymbolTable> tableList = new ArrayList<>();
@@ -31,15 +44,17 @@ public class MyParserListener extends scratchBaseListener {
 
     @Override
     public void exitProgram(scratchParser.ProgramContext ctx) {
-        for (String s : symMap.keySet()) {
+        /*for (String s : symMap.keySet()) {
             for (SymbolTable table : symMap.get(s)) {
                 System.out.println(s + ": " + table);
             }
-        }
+        }*/
+        System.out.println(Utils.instruction);
     }
 
     @Override
     public void enterFunction(scratchParser.FunctionContext ctx) {
+        int paramOffset = 0;
         String funcName = ctx.IDENT().getText();
         if (funcTable.get(funcName) != null) {
             throw new RuntimeException("函数重名");
@@ -51,7 +66,10 @@ public class MyParserListener extends scratchBaseListener {
             List<scratchParser.Function_paramContext> paramList = ctx.function_param_list().function_param();
             for (scratchParser.Function_paramContext param : paramList) {
                 paramMap.put(param.IDENT().getText(), new FunctionParam(
-                    param.isConst!=null, param.IDENT().getText(), Utils.getType(param.ty.getText())
+                    param.isConst!=null,
+                        param.IDENT().getText(),
+                        Utils.getType(param.ty.getText()),
+                        paramOffset++
                 ));
             }
         }
@@ -131,9 +149,13 @@ public class MyParserListener extends scratchBaseListener {
         ));
     }
 
+
     @Override
     public void enterExpr(scratchParser.ExprContext ctx) {
-        if (ctx.ari_expr() != null) {
+        if (ctx.ari_expr() != null || ctx.bool_expr() != null || ctx.func_expr() != null) {
+            Utils.queue.clear();
+            Utils.PostOrder(ctx);
+            Utils.handleExprStack();
 
         }
     }
@@ -188,4 +210,5 @@ public class MyParserListener extends scratchBaseListener {
             else return funcTable.get(currentFunc).getParamMap().get(ident);
         }
     }
+
 }

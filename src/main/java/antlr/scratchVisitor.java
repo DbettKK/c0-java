@@ -103,12 +103,6 @@ public interface scratchVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpr(scratchParser.ExprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link scratchParser#as_expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAs_expr(scratchParser.As_exprContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link scratchParser#bool_expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -174,4 +168,10 @@ public interface scratchVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitFactor(scratchParser.FactorContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link scratchParser#factor1}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFactor1(scratchParser.Factor1Context ctx);
 }

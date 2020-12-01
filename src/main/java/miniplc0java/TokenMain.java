@@ -8,9 +8,7 @@ import miniplc0java.tokenizer.Tokenizer;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class TokenMain {
     private static Tokenizer tokenize(StringIter iter) {
@@ -18,7 +16,7 @@ public class TokenMain {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        String path = "";
+        /*String path = "";
         //String path = "D:\\大学\\大三上\\编译\\作业\\miniplc0-java\\build\\libs\\in.txt";
         File f = new File(path);
         Scanner scanner = new Scanner(new FileReader(f));
@@ -40,6 +38,14 @@ public class TokenMain {
         }
         for (Token token : tokens) {
             System.out.println(token.toString());
-        }
+        }*/
+        Queue<String> strings = new ArrayDeque<>();
+        strings.add("(");
+        strings.add("(");
+        strings.add(")");
+        System.out.println(strings);
+        System.out.println(strings.remove("4"));;
+        System.out.println(strings.remove("("));;
+        System.out.println(strings);
     }
 }

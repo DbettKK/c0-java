@@ -4,12 +4,23 @@ public class FunctionParam implements ParamAndLocal{
     private boolean isConst;
     private String paramName;
     private Type paramType;
+    private int offset;
 
-    public FunctionParam(boolean isConst, String paramName, Type paramType) {
+    public FunctionParam(boolean isConst, String paramName, Type paramType, int offset) {
         this.isConst = isConst;
         this.paramName = paramName;
         this.paramType = paramType;
+        this.offset = offset;
     }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
     @Override
     public boolean isConst() {
         return isConst;
