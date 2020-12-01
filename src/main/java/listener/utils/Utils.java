@@ -23,6 +23,7 @@ public class Utils {
 
     public static void FuncParamAnalyse(ParseTree func) {
         String funcName = func.getChild(0).getText();
+        //System.out.println(funcName);
         Map<String, Function> funcTable = MyParserListener.getFuncTable();
         Map<String, FunctionParam> paramMap = funcTable.get(funcName).getParamMap();
         ParseTree param = func.getChild(2);
@@ -130,7 +131,31 @@ public class Utils {
     public static Expression handleInstruction(TerminalNode terminalNode) throws RuntimeException {
         String content = terminalNode.getText();
         int type = terminalNode.getSymbol().getType();
-        if (type == 37) {
+        if (type <= 36 && type >= 29) {
+            // stdlib
+            //GETINT=29, GETDOUBLE=30,
+            //		GETCHAR=31, PUTINT=32, PUTDOUBLE=33, PUTCHAR=34, PUTSTR=35, PUTLN=36,
+            //System.out.println("std");
+            switch (type) {
+                case 29:
+                    return new Expression(0, Type.INT);
+                case 30:
+                    return new Expression(0, Type.DOUBLE);
+                case 31:
+                    return new Expression(0, Type.INT);
+                case 32:
+                    return new Expression(0, Type.VOID);
+                case 33:
+                    return new Expression(0, Type.VOID);
+                case 34:
+                    return new Expression(0, Type.VOID);
+                case 35:
+                    return new Expression(0, Type.VOID);
+                case 36:
+                    return new Expression(0, Type.VOID);
+            }
+            return null;
+        } else if (type == 37) {
             // UINT or CHAR
             int value;
             try {
@@ -207,7 +232,6 @@ public class Utils {
                     return Type.INT;
                 }
             case "-":
-                System.out.println(type1 +"|"+ type3);
                 checkTypeEquals(type1, type3);
                 if (type1 == Type.DOUBLE) {
                     instruction.add("SubF");

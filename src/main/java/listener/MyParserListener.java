@@ -20,6 +20,7 @@ public class MyParserListener extends scratchBaseListener {
     //private final SymbolTable symbolTable = new SymbolTable(null, "#start");
     private static String currentFunc = "#start";
     private static int currentBlock = 0;
+    private int stdOffset = 25000;
     private static final Map<String, List<SymbolTable>> symMap = new HashMap<>();
     private boolean funcFlag;
 
@@ -40,6 +41,7 @@ public class MyParserListener extends scratchBaseListener {
         List<SymbolTable> tableList = new ArrayList<>();
         tableList.add(new SymbolTable(null, currentFunc));
         symMap.put(currentFunc, tableList);
+        initStd();
     }
 
     @Override
@@ -226,6 +228,26 @@ public class MyParserListener extends scratchBaseListener {
             if (table.getChainTable(ident) != null) return table.getChainTable(ident);
             else return funcTable.get(currentFunc).getParamMap().get(ident);
         }
+    }
+
+    private void initStd() {
+        Map<String, FunctionParam> paramMap = new HashMap<>();
+        funcTable.put("getint", new Function("getint", new HashMap<>(), Type.INT, stdOffset--));
+        funcTable.put("getdouble", new Function("getdouble", new HashMap<>(), Type.DOUBLE, stdOffset--));
+        funcTable.put("getchar", new Function("getchar", new HashMap<>(), Type.INT, stdOffset--));
+        funcTable.put("putln", new Function("putln", new HashMap<>(), Type.VOID, stdOffset--));
+        paramMap.put("x", new FunctionParam(false, "x", Type.INT, 0));
+        funcTable.put("putint", new Function("putint", paramMap, Type.VOID, stdOffset--));
+        paramMap.clear();
+        paramMap.put("x", new FunctionParam(false, "x", Type.DOUBLE, 0));
+        funcTable.put("putdouble", new Function("putdouble", paramMap, Type.VOID, stdOffset--));
+        paramMap.clear();
+        paramMap.put("x", new FunctionParam(false, "x", Type.INT, 0));
+        funcTable.put("putstr",  new Function("putstr", paramMap, Type.VOID, stdOffset--));
+        paramMap.clear();
+        paramMap.put("x", new FunctionParam(false, "x", Type.INT, 0));
+        funcTable.put("putchar", new Function("putchar", paramMap, Type.VOID, stdOffset--));
+
     }
 
 }
