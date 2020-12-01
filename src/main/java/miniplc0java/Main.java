@@ -21,7 +21,7 @@ public class Main {
     }
     public static void main(String[] args) throws IOException, RecognitionException {
         File file = new File(args[0]);
-        //File file = new File("D:/c.c0");
+        //File file = new File("D:/test.c0");
         InputStream in = new FileInputStream(file);
         //InputStream in = System.in;
         ANTLRInputStream input = new ANTLRInputStream(in);
