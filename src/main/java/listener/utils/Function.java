@@ -1,5 +1,7 @@
 package listener.utils;
 
+import antlr.scratchParser;
+
 import java.util.Map;
 
 public class Function {
@@ -55,5 +57,23 @@ public class Function {
                 ", returnType=" + returnType +
                 ", offset=" + offset +
                 '}';
+    }
+
+    public static void funcAssign(Type leftType, scratchParser.Func_exprContext ctx, Map<String, Function> funcTable) {
+        if (ctx.call_func() != null) {
+            // a = func();
+            String funcName = ctx.call_func().IDENT().getText();
+            if (funcTable.get(funcName).getReturnType() != leftType) {
+                throw new RuntimeException("assign-type-conflict");
+            }
+        } else if (ctx.call_stdlib() != null) {
+            // a = putInt() ...
+            scratchParser.Call_stdlibContext stdlibFunc = ctx.call_stdlib();
+            if (stdlibFunc.PUTINT() != null ) {
+                // 放入int类型
+            } else if (stdlibFunc.PUTDOUBLE() != null) {
+
+            }
+        }
     }
 }

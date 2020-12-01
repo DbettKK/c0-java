@@ -101,6 +101,18 @@ public class MyParserListener extends scratchBaseListener {
                 table.getOffset(),
                 Utils.getType(ctx.ty.getText())
         ));
+
+        // 解析赋值
+        if (ctx.ASSIGN() != null) {
+            if (ctx.expr().func_expr() != null) {
+                Function.funcAssign(Utils.getType(ctx.ty.getText()), ctx.expr().func_expr(), funcTable);
+            } else if (ctx.expr().ari_expr() != null) {
+                // 算数赋值
+            } else {
+                // bool_expr 无法赋值
+                throw new RuntimeException("boolExpr_assign-error");
+            }
+        }
     }
 
     @Override
@@ -130,12 +142,17 @@ public class MyParserListener extends scratchBaseListener {
     public void enterAssign_expr(scratchParser.Assign_exprContext ctx) {
         List<SymbolTable> tableList = symMap.get(currentFunc);
         SymbolTable table = tableList.get(currentBlock);
+        // a = expr
         String ident = ctx.IDENT().getText();
-        ParamAndLocal paramOrLoc = (ParamAndLocal) getChainTable(ident);
-        System.out.println(paramOrLoc.isConst());
+        ParamAndLocal paramOrLoc = getChainTable(ident);
         if (paramOrLoc.isConst()) {
             throw new RuntimeException("assign-const");
         }
+        if (ctx.expr().func_expr() != null) {
+            // 函数赋值判断
+            Function.funcAssign(paramOrLoc.getType(), ctx.expr().func_expr(), funcTable);
+        }
+
     }
 
     @Override
@@ -159,7 +176,7 @@ public class MyParserListener extends scratchBaseListener {
 
     }
 
-    private Object getChainTable(String ident) {
+    private ParamAndLocal getChainTable(String ident) {
         List<SymbolTable> tableList = symMap.get(currentFunc);
         SymbolTable table = tableList.get(currentBlock);
         if (table.getChainTable(ident) == null && funcTable.get(currentFunc).getParamMap().get(ident) == null) {

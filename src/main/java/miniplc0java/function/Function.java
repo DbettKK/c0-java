@@ -1,5 +1,6 @@
 package miniplc0java.function;
 
+import antlr.scratchParser;
 import miniplc0java.util.Type;
 
 import java.util.Map;
@@ -58,4 +59,5 @@ public class Function {
                 ", offset=" + offset +
                 '}';
     }
+
 }
