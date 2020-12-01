@@ -120,6 +120,13 @@ public class MyParserListener extends scratchBaseListener {
     }
 
     @Override
+    public void enterExpr(scratchParser.ExprContext ctx) {
+        if (ctx.ari_expr() != null) {
+
+        }
+    }
+
+    @Override
     public void enterAssign_expr(scratchParser.Assign_exprContext ctx) {
         List<SymbolTable> tableList = symMap.get(currentFunc);
         SymbolTable table = tableList.get(currentBlock);
@@ -144,6 +151,7 @@ public class MyParserListener extends scratchBaseListener {
         }
 
     }
+
 
     @Override
     public void enterReturn_stmt(scratchParser.Return_stmtContext ctx) {
