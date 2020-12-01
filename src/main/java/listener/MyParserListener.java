@@ -30,6 +30,15 @@ public class MyParserListener extends scratchBaseListener {
     }
 
     @Override
+    public void exitProgram(scratchParser.ProgramContext ctx) {
+        for (String s : symMap.keySet()) {
+            for (SymbolTable table : symMap.get(s)) {
+                System.out.println(s + ": " + table);
+            }
+        }
+    }
+
+    @Override
     public void enterFunction(scratchParser.FunctionContext ctx) {
         String funcName = ctx.IDENT().getText();
         if (funcTable.get(funcName) != null) {
@@ -111,11 +120,33 @@ public class MyParserListener extends scratchBaseListener {
     }
 
     @Override
-    public void exitProgram(scratchParser.ProgramContext ctx) {
-        for (String s : symMap.keySet()) {
-            for (SymbolTable table : symMap.get(s)) {
-                System.out.println(s + ": " + table);
+    public void enterAssign_expr(scratchParser.Assign_exprContext ctx) {
+        List<SymbolTable> tableList = symMap.get(currentFunc);
+        SymbolTable table = tableList.get(currentBlock);
+        String ident = ctx.IDENT().getText();
+        if (table.getChainTable(ident) == null) {
+            throw new RuntimeException("使用未定义的变量");
+        }
+        else if (table.getChainTable(ident).isConstant()) {
+            throw new RuntimeException("赋值常量");
+        }
+    }
+
+    @Override
+    public void enterFactor(scratchParser.FactorContext ctx) {
+        List<SymbolTable> tableList = symMap.get(currentFunc);
+        SymbolTable table = tableList.get(currentBlock);
+        if (ctx.IDENT() != null) {
+            String ident = ctx.IDENT().getText();
+            if (table.getChainTable(ident) == null && funcTable.get(currentFunc).getParamMap().get(ident) == null) {
+                throw new RuntimeException("使用未定义的变量");
             }
         }
+
+    }
+
+    @Override
+    public void enterReturn_stmt(scratchParser.Return_stmtContext ctx) {
+
     }
 }

@@ -8,7 +8,15 @@
     <artifactId>c0-java</artifactId>
     <version>1.0-SNAPSHOT</version>
     <build>
+        <finalName>MyApp</finalName>  <!-- 最终package打包的jar名称，注意这里没有版本号了。 -->
         <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>miniplc0java.Main</mainClass>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
