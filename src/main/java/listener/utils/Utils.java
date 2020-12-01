@@ -23,7 +23,7 @@ public class Utils {
 
     public static void FuncParamAnalyse(ParseTree func) {
         String funcName = func.getChild(0).getText();
-        //System.out.println(funcName);
+        System.out.println(funcName);
         Map<String, Function> funcTable = MyParserListener.getFuncTable();
         Map<String, FunctionParam> paramMap = funcTable.get(funcName).getParamMap();
         ParseTree param = func.getChild(2);
