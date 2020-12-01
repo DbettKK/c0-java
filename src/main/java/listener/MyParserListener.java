@@ -132,6 +132,7 @@ public class MyParserListener extends scratchBaseListener {
         SymbolTable table = tableList.get(currentBlock);
         String ident = ctx.IDENT().getText();
         ParamAndLocal paramOrLoc = (ParamAndLocal) getChainTable(ident);
+        System.out.println(paramOrLoc.isConst());
         if (paramOrLoc.isConst()) {
             throw new RuntimeException("assign-const");
         }

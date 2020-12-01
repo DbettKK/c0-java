@@ -10,9 +10,19 @@ public class FunctionParam implements ParamAndLocal{
         this.paramName = paramName;
         this.paramType = paramType;
     }
-
+    @Override
     public boolean isConst() {
         return isConst;
+    }
+
+    @Override
+    public Type getType() {
+        return paramType;
+    }
+
+    @Override
+    public void setType(Type type) {
+        this.paramType = type;
     }
 
     public void setConst(boolean aConst) {
@@ -27,13 +37,7 @@ public class FunctionParam implements ParamAndLocal{
         this.paramName = paramName;
     }
 
-    public Type getParamType() {
-        return paramType;
-    }
 
-    public void setParamType(Type paramType) {
-        this.paramType = paramType;
-    }
 
     @Override
     public String toString() {

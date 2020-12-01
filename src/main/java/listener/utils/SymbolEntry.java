@@ -44,7 +44,8 @@ public class SymbolEntry implements ParamAndLocal {
     /**
      * @return the isConstant
      */
-    public boolean isConstant() {
+    @Override
+    public boolean isConst() {
         return isConstant;
     }
 
