@@ -49,7 +49,12 @@ public class MyParserListener extends scratchBaseListener {
                 System.out.println(s + ": " + table);
             }
         }*/
-        System.out.println(Utils.instruction);
+        //System.out.println(Utils.instruction);
+        //System.out.println(Utils.queue);
+        /*Utils.cleanParenInQueue();
+        for (TerminalNode terminalNode : Utils.queue) {
+            System.out.println(terminalNode.getText());
+        }*/
     }
 
     @Override
@@ -152,11 +157,23 @@ public class MyParserListener extends scratchBaseListener {
 
     @Override
     public void enterExpr(scratchParser.ExprContext ctx) {
-        if (ctx.ari_expr() != null || ctx.bool_expr() != null || ctx.func_expr() != null) {
+        /*if (ctx.ari_expr() != null || ctx.bool_expr() != null || ctx.func_expr() != null) {
             Utils.queue.clear();
             Utils.PostOrder(ctx);
-            Utils.handleExprStack();
+            //Utils.handleExprStack();
 
+        }*/
+        if (ctx.ari_expr() != null || ctx.bool_expr() != null || ctx.func_expr() != null) {
+            Queue<TerminalNode> queue = new ArrayDeque<>();
+            Utils.PostOrder(ctx, queue);
+            Utils.cleanParenInQueue(queue);
+            /*for (TerminalNode terminalNode : queue) {
+                System.out.println(terminalNode.getText());
+            }*/
+            Type type = Utils.handleExprStack(queue);
+
+            //System.out.println(type);
+            //System.out.println("---------------");
         }
     }
 

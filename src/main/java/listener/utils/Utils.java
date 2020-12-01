@@ -41,59 +41,53 @@ public class Utils {
             FunctionParam functionParam = paramMap.get(s);
             paramIndex = functionParam.getOffset();
             paramType = functionParam.getType();
-            actualIndex = paramIndex * 2 - 1;
+            actualIndex = paramIndex * 2;
             ParseTree expr = param.getChild(actualIndex);
-            //PostOrder(expr);
+            Queue<TerminalNode> paramQueue = new ArrayDeque<>();
+            PostOrder(expr, paramQueue);
+            actualType = handleExprStack(paramQueue);
+            if (actualType != paramType) {
+                throw new RuntimeException("illegal-func-call-param-type-error");
+            }
         }
     }
 
-    public static void PostOrder(ParseTree tree){
+    public static void PostOrder(ParseTree tree, Queue<TerminalNode> queue){
         if(tree != null) {
-            if (tree.getChildCount() >= 3 && tree.getChild(0) instanceof TerminalNode
+            int childNum = tree.getChildCount();
+            int index = 0;
+            if (childNum >= 3 && tree.getChild(0) instanceof TerminalNode
                     && tree.getChild(1).getText().equals("(")) {
                 queue.add((TerminalNode) tree.getChild(0));
                 FuncParamAnalyse(tree);
                 //System.out.println(tree.getChild(0).getText());
                 return;
             }
-            PostOrder(tree.getChild(0));
-            if (tree.getChildCount() >= 2) {
-                PostOrder(tree.getChild(tree.getChildCount() - 1));
+            PostOrder(tree.getChild(index), queue);
+            while (index + 1 < childNum) {
+                index += 2;
+                PostOrder(tree.getChild(index), queue);
+                index--;
+                PostOrder(tree.getChild(index), queue);
+                index++;
+            }
+            if (tree instanceof TerminalNode) {
+                queue.add((TerminalNode) tree);
+                //System.out.println(tree.getText());
+            }
+            /*if (tree.getChildCount() >= 2) {
+                PostOrder(tree.getChild(2));
             }
             if (tree.getChildCount() == 3) {
                 PostOrder(tree.getChild(tree.getChildCount() - 2));
             }
-            /*if (tree.getChildCount() >= 3 && tree.getChild(0) instanceof TerminalNode
-                    && tree.getChild(1).getText().equals("(")
-                    && tree.getChild(tree.getChildCount()-1).getText().equals(")")) {
-
-            }*/
             if (tree instanceof TerminalNode) {
                 queue.add((TerminalNode) tree);
-                /*String content = tree.getText();
-                int type = ((TerminalNode) tree).getSymbol().getType();
-                if (type == 37) {
-                    // UINT or CHAR
-                    int value;
-                    try {
-                        value = Integer.parseInt(content);
-                    } catch (Exception e) {
-                        value = content.charAt(1);
-                    }
-                    instruction.add("PUSH " + value);
-                } else if (type == 39) {
-                    // DOUBLE
-                    double d = Double.parseDouble(content);
-                    long l = Double.doubleToRawLongBits(d);
-                    instruction.add("PUSH " + l);
-                }*/
-                //instruction.add("");
-                //System.out.println(content);
-            }
+            }*/
         }
     }
 
-    public static Type handleExprStack() {
+    public static Type handleExprStack(Queue<TerminalNode> queue) {
         //System.out.println(stack);
         // 栈内只会为奇数
         /*TerminalNode pop = stack.pop();
@@ -106,8 +100,23 @@ public class Utils {
             }
         }
         handleInstruction(pop);*/
-        cleanParenInStack();
-        TerminalNode pop1 = queue.poll();
+        //System.out.println(queue);
+        cleanParenInQueue(queue);
+        Stack<Type> stack = new Stack<>();
+        while (!queue.isEmpty()) {
+            TerminalNode poll = queue.poll();
+            if (!checkSymbolOrNot(poll)) {
+                stack.push(handleInstruction(poll).getType());
+            } else {
+                Type type1 = stack.pop();
+                Type type2 = stack.pop();
+                type1 = handleTriplex(type1, poll, type2);
+                stack.push(type1);
+            }
+        }
+        Type finalType = stack.pop();
+        return finalType;
+        /*TerminalNode pop1 = queue.poll();
         Type type1 = handleInstruction(pop1).getType();
         while (!queue.isEmpty()) {
             TerminalNode pop2 = queue.poll();
@@ -115,7 +124,7 @@ public class Utils {
             Type type3 = handleInstruction(pop2).getType();
             type1 = handleTriplex(type1, pop3, type3);
         }
-        return type1;
+        return type1;*/
     }
 
     public static Expression handleInstruction(TerminalNode terminalNode) throws RuntimeException {
@@ -198,6 +207,7 @@ public class Utils {
                     return Type.INT;
                 }
             case "-":
+                System.out.println(type1 +"|"+ type3);
                 checkTypeEquals(type1, type3);
                 if (type1 == Type.DOUBLE) {
                     instruction.add("SubF");
@@ -277,14 +287,25 @@ public class Utils {
         return null;
     }
 
-    public static void cleanParenInStack() {
-        for (TerminalNode terminalNode : queue) {
-            if (terminalNode.getText().equals("(")) queue.remove(terminalNode);
-            if (terminalNode.getText().equals(")")) queue.remove(terminalNode);
+    public static void cleanParenInQueue(Queue<TerminalNode> queue) {
+        Queue<TerminalNode> tmp = new ArrayDeque<>();
+        while (!queue.isEmpty()) {
+            TerminalNode poll = queue.poll();
+            if (poll.getText().equals("(") || poll.getText().equals(")")) continue;
+            tmp.add(poll);
         }
+        while (!tmp.isEmpty()) queue.add(tmp.poll());
     }
 
     public static void checkTypeEquals(Type type1, Type type3) {
         if (type1 != type3) throw new RuntimeException("unmatched-type");
+    }
+
+    public static boolean checkSymbolOrNot(TerminalNode node) {
+        String[] symbols = {"+", "-", "*", "/", "as", ">=", "<=", "==", "!=", "<", ">"};
+        for (String symbol : symbols) {
+            if (node.getText().equals(symbol)) return true;
+        }
+        return false;
     }
 }
