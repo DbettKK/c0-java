@@ -1,6 +1,6 @@
 package listener.utils;
 
-public class SymbolEntry {
+public class SymbolEntry implements ParamAndLocal {
     private boolean isConstant;
     private boolean isInitialized;
     private int stackOffset;

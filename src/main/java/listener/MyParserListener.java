@@ -93,7 +93,7 @@ public class MyParserListener extends scratchBaseListener {
         SymbolTable table = tableList.get(currentBlock);
         String ident = ctx.IDENT().getText();
         if (table.getCurTable(ident) != null) {
-            throw new RuntimeException("重复声明变量");
+            throw new RuntimeException("duplicate-declareVar-error");
         }
         table.put(ident, new SymbolEntry(
                false,
@@ -109,7 +109,7 @@ public class MyParserListener extends scratchBaseListener {
         SymbolTable table = tableList.get(currentBlock);
         String ident = ctx.IDENT().getText();
         if (table.getCurTable(ident) != null) {
-            throw new RuntimeException("重复声明常量");
+            throw new RuntimeException("duplicate-declareConst-error");
         }
         table.put(ident, new SymbolEntry(
                 true,
@@ -131,11 +131,9 @@ public class MyParserListener extends scratchBaseListener {
         List<SymbolTable> tableList = symMap.get(currentFunc);
         SymbolTable table = tableList.get(currentBlock);
         String ident = ctx.IDENT().getText();
-        if (table.getChainTable(ident) == null) {
-            throw new RuntimeException("使用未定义的变量");
-        }
-        else if (table.getChainTable(ident).isConstant()) {
-            throw new RuntimeException("赋值常量");
+        ParamAndLocal paramOrLoc = (ParamAndLocal) getChainTable(ident);
+        if (paramOrLoc.isConst()) {
+            throw new RuntimeException("assign-const");
         }
     }
 
@@ -146,7 +144,7 @@ public class MyParserListener extends scratchBaseListener {
         if (ctx.IDENT() != null) {
             String ident = ctx.IDENT().getText();
             if (table.getChainTable(ident) == null && funcTable.get(currentFunc).getParamMap().get(ident) == null) {
-                throw new RuntimeException("使用未定义的变量");
+                throw new RuntimeException("undefined-var/const-error");
             }
         }
 
@@ -156,5 +154,16 @@ public class MyParserListener extends scratchBaseListener {
     @Override
     public void enterReturn_stmt(scratchParser.Return_stmtContext ctx) {
 
+    }
+
+    private Object getChainTable(String ident) {
+        List<SymbolTable> tableList = symMap.get(currentFunc);
+        SymbolTable table = tableList.get(currentBlock);
+        if (table.getChainTable(ident) == null && funcTable.get(currentFunc).getParamMap().get(ident) == null) {
+            throw new RuntimeException("undefined-var/const-error");
+        } else {
+            if (table.getChainTable(ident) != null) return table.getChainTable(ident);
+            else return funcTable.get(currentFunc).getParamMap().get(ident);
+        }
     }
 }

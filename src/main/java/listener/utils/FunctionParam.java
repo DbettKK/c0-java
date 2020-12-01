@@ -1,6 +1,6 @@
 package listener.utils;
 
-public class FunctionParam {
+public class FunctionParam implements ParamAndLocal{
     private boolean isConst;
     private String paramName;
     private Type paramType;
