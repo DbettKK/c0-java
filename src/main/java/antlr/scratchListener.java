@@ -160,6 +160,26 @@ public interface scratchListener extends ParseTreeListener {
 	 */
 	void exitExpr(scratchParser.ExprContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link scratchParser#expr_new}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpr_new(scratchParser.Expr_newContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link scratchParser#expr_new}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpr_new(scratchParser.Expr_newContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link scratchParser#as_expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterAs_expr(scratchParser.As_exprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link scratchParser#as_expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitAs_expr(scratchParser.As_exprContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link scratchParser#bool_expr}.
 	 * @param ctx the parse tree
 	 */
@@ -239,16 +259,6 @@ public interface scratchListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCharacter(scratchParser.CharacterContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link scratchParser#char_literal}.
-	 * @param ctx the parse tree
-	 */
-	void enterChar_literal(scratchParser.Char_literalContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link scratchParser#char_literal}.
-	 * @param ctx the parse tree
-	 */
-	void exitChar_literal(scratchParser.Char_literalContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link scratchParser#param}.
 	 * @param ctx the parse tree

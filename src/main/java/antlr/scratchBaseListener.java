@@ -198,6 +198,30 @@ public class scratchBaseListener implements scratchListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterExpr_new(scratchParser.Expr_newContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpr_new(scratchParser.Expr_newContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAs_expr(scratchParser.As_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAs_expr(scratchParser.As_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterBool_expr(scratchParser.Bool_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -289,18 +313,6 @@ public class scratchBaseListener implements scratchListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCharacter(scratchParser.CharacterContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterChar_literal(scratchParser.Char_literalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitChar_literal(scratchParser.Char_literalContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
