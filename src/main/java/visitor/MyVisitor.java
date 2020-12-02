@@ -293,6 +293,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         System.out.println("enter");
         Expression e = visit(ctx.expr());
         boolean condition = VisitorUtil.getCondition(e);
+        System.out.println(condition);
         while (condition) {
 
             //System.out.println(currentBlock);
@@ -611,12 +612,21 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         Type returnType = Utils.getType(ctx.ty.getText());
         Type actualType = Type.VOID;
         List<C0Parser.StmtContext> stmtList = ctx.blockStmt().stmt();
+        boolean is = false;
         for (C0Parser.StmtContext stmtContext : stmtList) {
             if (stmtContext.returnStmt() != null) {
-                actualType = visit(stmtContext.returnStmt().expr()).getType();
+                try {
+                    //System.out.println(stmtContext.returnStmt().expr().getText());
+                    is = true;
+                    actualType = visit(stmtContext.returnStmt().expr()).getType();
+                } catch (Exception e) {
+                    return;
+                }
+
             }
         }
-        if (returnType != actualType) {
+        if (returnType != actualType && is) {
+            System.out.println(actualType);
             throw new RuntimeException("return-type-error");
         }
     }
