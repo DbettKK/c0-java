@@ -219,6 +219,9 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         //System.out.println(funcParam);
         visit(ctx.blockStmt());
         Expression returnExpresstion = returnExpression.get(funcName);
+        if (returnExpresstion == null) {
+            returnExpresstion  = new Expression(0, Type.VOID);
+        }
         //currentBlock = tmpBlock;
         //System.out.println("####stack" + tmpFuncParamStack);
         if(!tmpFuncParamStack.isEmpty())
