@@ -136,6 +136,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
 
         int paramOffset = 0;
         String funcName = ctx.IDENT().getText();
+        //System.out.println(funcName);
         if (funcName.equals("main")) {
             funcTable.put("main", new Function(
                     "main",
@@ -392,7 +393,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
 
     @Override
     public Expression visitGetInt(C0Parser.GetIntContext ctx) {
-        return new Expression(1, Type.INT);
+        return new Expression(5, Type.INT);
     }
 
     @Override
@@ -491,6 +492,13 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             SymbolEntry entry = table.getChainTable(leftId);
             entry.setInitialized(true);
             entry.setValue(e.getValue());
+        } else {
+            List<FunctionParam> paramList = funcParam.get(currentFunc);
+            for (FunctionParam param : paramList) {
+                if (param.getParamName().equals(leftId)) {
+                    param.setValue(e.getValue());
+                }
+            }
         }
         //System.out.println(leftId + " = " + e);
         // 赋值语句无法使用 返回void
@@ -522,6 +530,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
     @Override
     public Expression visitBoolExpr(C0Parser.BoolExprContext ctx) {
         Expression left = visit(ctx.expr(0));
+        System.out.println(left);
         String symbol = ctx.BOOL_OP().getText();
         Expression right = visit(ctx.expr(1));
         if (left.getType() == Type.VOID || right.getType() == Type.VOID || left.getType() != right.getType()) {
