@@ -33,14 +33,14 @@ public class C0BaseVisitor<T> extends AbstractParseTreeVisitor<T> implements C0V
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitFunctionParam(C0Parser.FunctionParamContext ctx) { return visitChildren(ctx); }
+	@Override public T visitFunctionParamList(C0Parser.FunctionParamListContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitFunctionParamList(C0Parser.FunctionParamListContext ctx) { return visitChildren(ctx); }
+	@Override public T visitFunctionParam(C0Parser.FunctionParamContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -30,16 +30,6 @@ public interface C0Listener extends ParseTreeListener {
 	 */
 	void exitFunction(C0Parser.FunctionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link C0Parser#functionParam}.
-	 * @param ctx the parse tree
-	 */
-	void enterFunctionParam(C0Parser.FunctionParamContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link C0Parser#functionParam}.
-	 * @param ctx the parse tree
-	 */
-	void exitFunctionParam(C0Parser.FunctionParamContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link C0Parser#functionParamList}.
 	 * @param ctx the parse tree
 	 */
@@ -49,6 +39,16 @@ public interface C0Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFunctionParamList(C0Parser.FunctionParamListContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link C0Parser#functionParam}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionParam(C0Parser.FunctionParamContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link C0Parser#functionParam}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionParam(C0Parser.FunctionParamContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link C0Parser#stmt}.
 	 * @param ctx the parse tree

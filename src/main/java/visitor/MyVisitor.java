@@ -17,6 +17,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
     private static Map<String, FunctionNode> functionNodeMap = new HashMap<>();
     private int nodeOffset = 0;
     private static Map<String, List<Expression>> callFuncParam = new HashMap<>();
+    private static Map<String, List<FunctionParam>> funcParam = new HashMap<>();
     private int funcOffset = 0;
     // 全局符号表
     //private final SymbolTable symbolTable = new SymbolTable(null, "#start");
@@ -127,21 +128,52 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             }
         }
         // judge
+        if (actualParamNum != declareParamNum) {
+            throw new RuntimeException("param-num-error");
+        }
+        for (int i = 0; i < actualParamNum; i++) {
+            if (actualParamList.get(i).getType() != declareParamList.get(i))
+                throw new RuntimeException("param-type-error");
+        }
+        if (ctx.functionParamList() != null) {
+            List<C0Parser.FunctionParamContext> paramList = ctx.functionParamList().functionParam();
+            for (C0Parser.FunctionParamContext param : paramList) {
+                paramMap.put(param.IDENT().getText(), new FunctionParam(
+                        param.isConst!=null,
+                        param.IDENT().getText(),
+                        Utils.getType(param.ty.getText()),
+                        paramOffset,
+                        actualParamList.get(paramOffset)
+                ));
+                paramOffset++;
+            }
+        }
+
         //
-        funcTable.put(funcName, new Function(
-                funcName,
-                paramMap,
-                Utils.getType(ctx.ty.getText()),
-                funcOffset++,
-                null
-        ));
+
         List<SymbolTable> tableList = new ArrayList<>();
         SymbolTable startTable = symMap.get("#start").get(symMap.get("#start").size() - 1);
         tableList.add(new SymbolTable(startTable, funcName));
         symMap.put(currentFunc, tableList);
         funcFlag = false;
-        visit(ctx.blockStmt());
-        return null;
+        funcParam.clear();
+        List<FunctionParam> paramList = new ArrayList<>();
+        for (String s : paramMap.keySet()) {
+            paramList.add(paramMap.get(s));
+        }
+        funcParam.put(funcName, paramList);
+        Expression returnExpresstion = visit(ctx.blockStmt());
+        Type actualReturnType = returnExpresstion.getType();
+        if (actualReturnType != Utils.getType(ctx.ty.getText()))
+            throw new RuntimeException("return-type-error");
+        funcTable.put(funcName, new Function(
+                funcName,
+                paramMap,
+                Utils.getType(ctx.ty.getText()),
+                funcOffset++,
+                returnExpresstion.getValue()
+        ));
+        return returnExpresstion;
     }
 
     @Override
@@ -154,10 +186,23 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             tableList.add(table);
             currentBlock++;
         }
+        Expression returnExpresstion = null;
         for (C0Parser.StmtContext stmtContext : ctx.stmt()) {
-            visit(stmtContext);
+            if (stmtContext.returnStmt() != null) {
+                System.out.println("return");
+                returnExpresstion = visit(stmtContext);
+            }
+            else visit(stmtContext);
         }
-        return null;
+        if (returnExpresstion == null) {
+            return new Expression(0, Type.VOID);
+        }
+        return returnExpresstion;
+    }
+
+    @Override
+    public Expression visitReturnStmt(C0Parser.ReturnStmtContext ctx) {
+        return visit(ctx.expr());
     }
 
     @Override
@@ -186,15 +231,17 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         }
         callFuncParam.put(funcName, paramList);
 
-        visit((ParseTree) functionNode);
+        Expression returnExpression = visit(functionNode.getFunctionContext());
+
+
         //if (funcTable.get(funcName) == null) throw new RuntimeException("call-undeclared-func");
-        Function function = funcTable.get(funcName);
+        /*Function function = funcTable.get(funcName);
         // TODO 执行函数
         if (function.getReturnType() == Type.VOID) {
             return new Expression(0, Type.VOID);
         }
-        Map<String, FunctionParam> paramMap = function.getParamMap();
-        return VisitorUtil.callFunc();
+        Map<String, FunctionParam> paramMap = function.getParamMap();*/
+        return returnExpression;
     }
 
 
@@ -276,6 +323,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
     @Override
     public Expression visitIdent(C0Parser.IdentContext ctx) {
         boolean isParam;
+        FunctionParam param = null;
         List<SymbolTable> tableList = symMap.get(currentFunc);
         SymbolTable table = tableList.get(currentBlock);
         String ident = ctx.IDENT().getText();
@@ -283,13 +331,24 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         if (currentFunc.equals("#start")) {
             isParam = false;
         } else {
-            isParam = funcTable.get(currentFunc).getParamMap().get(ident) != null;
+            isParam = false;
+            //isParam = funcTable.get(currentFunc).getParamMap().get(ident) != null;
+            List<FunctionParam> paramList = funcParam.get(currentFunc);
+            for (FunctionParam functionParam : paramList) {
+                if (functionParam.getParamName().equals(ident)) {
+                    isParam = true;
+                    param = functionParam;
+                }
+            }
         }
         if (!isParam && entry == null) {
             throw new RuntimeException("use-undeclared-ident");
-        } else if (!entry.isInitialized()){
+        } else if (entry != null && !entry.isInitialized()){
             throw new RuntimeException("use-uninitialized-ident");
         } else {
+            if (isParam) {
+                return new Expression(param.getValue(), param.getType());
+            }
             return new Expression(entry.getValue(), entry.getType());
         }
     }

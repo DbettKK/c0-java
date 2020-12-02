@@ -25,17 +25,17 @@ public interface C0Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFunction(C0Parser.FunctionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link C0Parser#functionParam}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunctionParam(C0Parser.FunctionParamContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link C0Parser#functionParamList}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitFunctionParamList(C0Parser.FunctionParamListContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link C0Parser#functionParam}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionParam(C0Parser.FunctionParamContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link C0Parser#stmt}.
 	 * @param ctx the parse tree
