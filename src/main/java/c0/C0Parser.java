@@ -47,7 +47,7 @@ public class C0Parser extends Parser {
 		return new String[] {
 			null, "'fn'", "'('", "')'", "'->'", "'int'", "'void'", "'double'", "','", 
 			"'const'", "':'", "';'", "'let'", "'if'", "'else'", "'while'", "'{'", 
-			"'}'", "'return'", "'+'", "'-'", "'*'", "'/'", "'as'", "'\"'", "'\\'", 
+			"'}'", "'return'", "'as'", "'+'", "'-'", "'*'", "'/'", "'\"'", "'\\'", 
 			"'|'", "'#'", "'^'", "'?'", null, null, "'='", "'getint'", "'getdouble'", 
 			"'getchar'", "'putint'", "'putdouble'", "'putchar'", "'putstr'", "'putln'"
 		};
@@ -457,7 +457,7 @@ public class C0Parser extends Parser {
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__1:
-			case T__19:
+			case T__20:
 			case GETINT:
 			case GETDOUBLE:
 			case GETCHAR:
@@ -1047,7 +1047,7 @@ public class C0Parser extends Parser {
 			setState(140);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__1) | (1L << T__8) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__14) | (1L << T__15) | (1L << T__17) | (1L << T__19) | (1L << GETINT) | (1L << GETDOUBLE) | (1L << GETCHAR) | (1L << PUTINT) | (1L << PUTDOUBLE) | (1L << PUTCHAR) | (1L << PUTSTR) | (1L << PUTLN) | (1L << UINT) | (1L << DOUBLE) | (1L << IDENT))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__1) | (1L << T__8) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__14) | (1L << T__15) | (1L << T__17) | (1L << T__20) | (1L << GETINT) | (1L << GETDOUBLE) | (1L << GETCHAR) | (1L << PUTINT) | (1L << PUTDOUBLE) | (1L << PUTCHAR) | (1L << PUTSTR) | (1L << PUTLN) | (1L << UINT) | (1L << DOUBLE) | (1L << IDENT))) != 0)) {
 				{
 				{
 				setState(137);
@@ -1149,7 +1149,7 @@ public class C0Parser extends Parser {
 			setState(149);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__1) | (1L << T__19) | (1L << GETINT) | (1L << GETDOUBLE) | (1L << GETCHAR) | (1L << PUTINT) | (1L << PUTDOUBLE) | (1L << PUTCHAR) | (1L << PUTSTR) | (1L << PUTLN) | (1L << UINT) | (1L << DOUBLE) | (1L << IDENT))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__1) | (1L << T__20) | (1L << GETINT) | (1L << GETDOUBLE) | (1L << GETCHAR) | (1L << PUTINT) | (1L << PUTDOUBLE) | (1L << PUTCHAR) | (1L << PUTSTR) | (1L << PUTLN) | (1L << UINT) | (1L << DOUBLE) | (1L << IDENT))) != 0)) {
 				{
 				setState(148);
 				expr(0);
@@ -1444,7 +1444,7 @@ public class C0Parser extends Parser {
 						{
 						{
 						setState(155);
-						match(T__19);
+						match(T__20);
 						}
 						}
 						break;
@@ -1530,11 +1530,11 @@ public class C0Parser extends Parser {
 						_localctx = new AddExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(173);
-						if (!(precpred(_ctx, 10))) throw new FailedPredicateException(this, "precpred(_ctx, 10)");
+						if (!(precpred(_ctx, 9))) throw new FailedPredicateException(this, "precpred(_ctx, 9)");
 						setState(174);
 						((AddExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !(_la==T__18 || _la==T__19) ) {
+						if ( !(_la==T__19 || _la==T__20) ) {
 							((AddExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
@@ -1543,7 +1543,7 @@ public class C0Parser extends Parser {
 							consume();
 						}
 						setState(175);
-						expr(11);
+						expr(10);
 						}
 						break;
 					case 2:
@@ -1551,11 +1551,11 @@ public class C0Parser extends Parser {
 						_localctx = new MultExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(176);
-						if (!(precpred(_ctx, 9))) throw new FailedPredicateException(this, "precpred(_ctx, 9)");
+						if (!(precpred(_ctx, 8))) throw new FailedPredicateException(this, "precpred(_ctx, 8)");
 						setState(177);
 						((MultExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !(_la==T__20 || _la==T__21) ) {
+						if ( !(_la==T__21 || _la==T__22) ) {
 							((MultExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
@@ -1564,7 +1564,7 @@ public class C0Parser extends Parser {
 							consume();
 						}
 						setState(178);
-						expr(10);
+						expr(9);
 						}
 						break;
 					case 3:
@@ -1572,11 +1572,11 @@ public class C0Parser extends Parser {
 						_localctx = new BoolExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(179);
-						if (!(precpred(_ctx, 8))) throw new FailedPredicateException(this, "precpred(_ctx, 8)");
+						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
 						setState(180);
 						match(BOOL_OP);
 						setState(181);
-						expr(9);
+						expr(8);
 						}
 						break;
 					case 4:
@@ -1584,9 +1584,9 @@ public class C0Parser extends Parser {
 						_localctx = new AsExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(182);
-						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
+						if (!(precpred(_ctx, 10))) throw new FailedPredicateException(this, "precpred(_ctx, 10)");
 						setState(183);
-						match(T__22);
+						match(T__18);
 						setState(184);
 						((AsExprContext)_localctx).ty = _input.LT(1);
 						_la = _input.LA(1);
@@ -1730,7 +1730,7 @@ public class C0Parser extends Parser {
 			setState(204);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__1) | (1L << T__19) | (1L << GETINT) | (1L << GETDOUBLE) | (1L << GETCHAR) | (1L << PUTINT) | (1L << PUTDOUBLE) | (1L << PUTCHAR) | (1L << PUTSTR) | (1L << PUTLN) | (1L << UINT) | (1L << DOUBLE) | (1L << IDENT))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__1) | (1L << T__20) | (1L << GETINT) | (1L << GETDOUBLE) | (1L << GETCHAR) | (1L << PUTINT) | (1L << PUTDOUBLE) | (1L << PUTCHAR) | (1L << PUTSTR) | (1L << PUTLN) | (1L << UINT) | (1L << DOUBLE) | (1L << IDENT))) != 0)) {
 				{
 				setState(196);
 				expr(0);
@@ -2266,13 +2266,13 @@ public class C0Parser extends Parser {
 	private boolean expr_sempred(ExprContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 0:
-			return precpred(_ctx, 10);
-		case 1:
 			return precpred(_ctx, 9);
-		case 2:
+		case 1:
 			return precpred(_ctx, 8);
-		case 3:
+		case 2:
 			return precpred(_ctx, 7);
+		case 3:
+			return precpred(_ctx, 10);
 		}
 		return true;
 	}
@@ -2299,7 +2299,7 @@ public class C0Parser extends Parser {
 		"\3\24\3\24\3\24\3\24\3\24\3\24\3\24\5\24\u00f6\n\24\3\25\3\25\7\25\u00fa"+
 		"\n\25\f\25\16\25\u00fd\13\25\3\25\3\25\5\25\u0101\n\25\3\26\3\26\3\26"+
 		"\3\26\3\26\3\26\5\26\u0109\n\26\3\26\2\3 \27\2\4\6\b\n\f\16\20\22\24\26"+
-		"\30\32\34\36 \"$&(*\2\7\3\2\7\t\4\2\7\7\t\t\3\2\25\26\3\2\27\30\3\2\32"+
+		"\30\32\34\36 \"$&(*\2\7\3\2\7\t\4\2\7\7\t\t\3\2\26\27\3\2\30\31\3\2\32"+
 		"\33\2\u0128\2\60\3\2\2\2\4\63\3\2\2\2\6>\3\2\2\2\bG\3\2\2\2\nT\3\2\2\2"+
 		"\fV\3\2\2\2\16[\3\2\2\2\20]\3\2\2\2\22g\3\2\2\2\24o\3\2\2\2\26{\3\2\2"+
 		"\2\30\u0080\3\2\2\2\32\u008a\3\2\2\2\34\u0093\3\2\2\2\36\u0095\3\2\2\2"+
@@ -2329,17 +2329,17 @@ public class C0Parser extends Parser {
 		"\2\2\u0092\33\3\2\2\2\u0093\u0094\7\r\2\2\u0094\35\3\2\2\2\u0095\u0097"+
 		"\7\24\2\2\u0096\u0098\5 \21\2\u0097\u0096\3\2\2\2\u0097\u0098\3\2\2\2"+
 		"\u0098\u0099\3\2\2\2\u0099\u009a\7\r\2\2\u009a\37\3\2\2\2\u009b\u009c"+
-		"\b\21\1\2\u009c\u00ae\5\"\22\2\u009d\u009f\7\26\2\2\u009e\u009d\3\2\2"+
+		"\b\21\1\2\u009c\u00ae\5\"\22\2\u009d\u009f\7\27\2\2\u009e\u009d\3\2\2"+
 		"\2\u009f\u00a0\3\2\2\2\u00a0\u009e\3\2\2\2\u00a0\u00a1\3\2\2\2\u00a1\u00a2"+
 		"\3\2\2\2\u00a2\u00ae\5 \21\b\u00a3\u00a4\7\4\2\2\u00a4\u00a5\5 \21\2\u00a5"+
 		"\u00a6\7\5\2\2\u00a6\u00ae\3\2\2\2\u00a7\u00a8\7.\2\2\u00a8\u00a9\7\""+
 		"\2\2\u00a9\u00ae\5 \21\6\u00aa\u00ae\7.\2\2\u00ab\u00ae\7+\2\2\u00ac\u00ae"+
 		"\7-\2\2\u00ad\u009b\3\2\2\2\u00ad\u009e\3\2\2\2\u00ad\u00a3\3\2\2\2\u00ad"+
 		"\u00a7\3\2\2\2\u00ad\u00aa\3\2\2\2\u00ad\u00ab\3\2\2\2\u00ad\u00ac\3\2"+
-		"\2\2\u00ae\u00bd\3\2\2\2\u00af\u00b0\f\f\2\2\u00b0\u00b1\t\4\2\2\u00b1"+
-		"\u00bc\5 \21\r\u00b2\u00b3\f\13\2\2\u00b3\u00b4\t\5\2\2\u00b4\u00bc\5"+
-		" \21\f\u00b5\u00b6\f\n\2\2\u00b6\u00b7\7!\2\2\u00b7\u00bc\5 \21\13\u00b8"+
-		"\u00b9\f\t\2\2\u00b9\u00ba\7\31\2\2\u00ba\u00bc\t\3\2\2\u00bb\u00af\3"+
+		"\2\2\u00ae\u00bd\3\2\2\2\u00af\u00b0\f\13\2\2\u00b0\u00b1\t\4\2\2\u00b1"+
+		"\u00bc\5 \21\f\u00b2\u00b3\f\n\2\2\u00b3\u00b4\t\5\2\2\u00b4\u00bc\5 "+
+		"\21\13\u00b5\u00b6\f\t\2\2\u00b6\u00b7\7!\2\2\u00b7\u00bc\5 \21\n\u00b8"+
+		"\u00b9\f\f\2\2\u00b9\u00ba\7\25\2\2\u00ba\u00bc\t\3\2\2\u00bb\u00af\3"+
 		"\2\2\2\u00bb\u00b2\3\2\2\2\u00bb\u00b5\3\2\2\2\u00bb\u00b8\3\2\2\2\u00bc"+
 		"\u00bf\3\2\2\2\u00bd\u00bb\3\2\2\2\u00bd\u00be\3\2\2\2\u00be!\3\2\2\2"+
 		"\u00bf\u00bd\3\2\2\2\u00c0\u00c3\5$\23\2\u00c1\u00c3\5&\24\2\u00c2\u00c0"+
