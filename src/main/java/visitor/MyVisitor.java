@@ -23,9 +23,10 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
     private static Map<String, List<Expression>> callFuncParam = new HashMap<>();
     // 存放每个函数的定义的参数
     private static Map<String, List<FunctionParam>> funcParam = new HashMap<>();
-
-    private int tmpBlock;
-    private String tmpFuncName;
+    // 存放每个函数的返回值
+    private static Map<String, Expression> returnExpression = new HashMap<>();
+    private static Stack<Integer> tmpBlock = new Stack<>();
+    private static Stack<String> tmpFuncName = new Stack<>();
     private static Stack<Map<String, List<FunctionParam>>> tmpFuncParamStack = new Stack<>();
     // 全局符号表
     //private final SymbolTable symbolTable = new SymbolTable(null, "#start");
@@ -52,23 +53,19 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             }
         }
         callFuncParam.put("main", new ArrayList<>());
-        funcTable.put("main", new Function(
-                "main",
-                new HashMap<>(),
-                Type.VOID,
-                funcOffset++,
-                0
-        ));
         for (ParseTree child : children) {
             if (child instanceof C0Parser.FunctionContext) {
                 String funcName = ((C0Parser.FunctionContext) child).IDENT().getText();
                 if (funcName.equals("main")) {
                     visit(child);
+                    isVisit.put(funcName, true);
                 }
-            } else visit(child);
+            } else {
+                visit(child);
+            }
         }
         for (String s : isVisit.keySet()) {
-            if (!isVisit.get(s)) {
+            if (!isVisit.get(s) && !s.equals("main")) {
                 visitFuncToCheckType(functionNodeMap.get(s).getFunctionContext());
             }
         }
@@ -81,6 +78,9 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         List<SymbolTable> tableList = symMap.get(currentFunc);
         SymbolTable table = tableList.get(currentBlock);
         String ident = ctx.IDENT().getText();
+        if (table.getCurTable(ident) != null) {
+            throw new RuntimeException("duplicate-assign-in-one-bloack");
+        }
         if (ctx.ASSIGN() != null) {
             Expression expression = visit(ctx.expr());
             Type declareType = Utils.getType(ctx.ty.getText());
@@ -116,6 +116,9 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         if (declareType != expression.getType()) {
             throw new RuntimeException("assign-const-type-conflict");
         }
+        if (table.getCurTable(ident) != null) {
+            throw new RuntimeException("duplicate-assign-in-one-bloack");
+        }
         table.put(ident, new SymbolEntry(
                 true,
                 true,
@@ -132,11 +135,20 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
 
         int paramOffset = 0;
         String funcName = ctx.IDENT().getText();
+        if (funcName.equals("main")) {
+            funcTable.put("main", new Function(
+                    "main",
+                    new HashMap<>(),
+                    Utils.getType(ctx.ty.getText()),
+                    funcOffset++,
+                    0
+            ));
+        }
         /*if (funcTable.get(funcName) != null) {
             throw new RuntimeException("duplicated-func-name");
         }*/
         currentFunc = funcName;
-
+        isVisit.put(funcName, true);
         int actualParamNum, declareParamNum = 0;
         // 取得调用当前函数的实际参数列表
         List<Expression> actualParamList = callFuncParam.get(funcName);
@@ -205,15 +217,15 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         //System.out.println("cur Func->" + currentFunc);
         //System.out.println("-----Enter->" + funcName);
         //System.out.println(funcParam);
-        Expression returnExpresstion = visit(ctx.blockStmt());
-        currentBlock = tmpBlock;
-        currentFunc = tmpFuncName;
-        System.out.println("####stack" + tmpFuncParamStack);
+        visit(ctx.blockStmt());
+        Expression returnExpresstion = returnExpression.get(funcName);
+        //currentBlock = tmpBlock;
+        //System.out.println("####stack" + tmpFuncParamStack);
         if(!tmpFuncParamStack.isEmpty())
             funcParam = tmpFuncParamStack.pop();
-        System.out.println("func exit->" + funcName);
-        System.out.println("cur Func->" + currentFunc);
-        System.out.println("cur funcParam" + funcParam);
+        //System.out.println("func exit->" + funcName);
+        //System.out.println("cur Func->" + currentFunc);
+        //System.out.println("cur funcParam" + funcParam);
         //System.out.println(funcParam);
         //currentFunc = tmp;
         //funcParam = tmpMapParam;
@@ -234,9 +246,9 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
     public Expression visitCallFunc(C0Parser.CallFuncContext ctx) {
         String funcName = ctx.IDENT().getText();
         FunctionNode functionNode = functionNodeMap.get(funcName);
-        System.out.println("---------------");
-        System.out.println("cur func->" + currentFunc);
-        System.out.println("call func->" + funcName);
+        //System.out.println("---------------");
+        //System.out.println("cur func->" + currentFunc);
+        //System.out.println("call func->" + funcName);
         if (functionNode == null) throw new RuntimeException("call-undeclared-func");
         // 添加实际参数
         List<Expression> paramList = new ArrayList<>();
@@ -244,18 +256,21 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         for (ParseTree child : ctx.children) {
             if (child instanceof C0Parser.ExprContext) {
                 // TODO here
-                System.out.println(currentFunc + "-" +funcParam);
+                //System.out.println(currentFunc + "-" +funcParam);
                 Expression param = visit(child);
                 paramList.add(param);
             }
         }
-        tmpBlock = currentBlock;
+        tmpBlock.push(currentBlock);
         callFuncParam.put(funcName, paramList);
-        tmpFuncName = currentFunc;
+        tmpFuncName.push(currentFunc);
         Map<String, List<FunctionParam>> newFuncParam = new HashMap<>(funcParam);
         tmpFuncParamStack.push(newFuncParam);
-        System.out.println("stored->" + newFuncParam);
+        //System.out.println("stored->" + newFuncParam);
         Expression returnExpression = visit(functionNode.getFunctionContext());
+        currentFunc = tmpFuncName.pop();
+        currentBlock = tmpBlock.pop();
+        //System.out.println("cur->" + tmpBlock);
         /*callFuncParam = tmpMap;
         funcParam = tmpMapParam;*/
         //if (funcTable.get(funcName) == null) throw new RuntimeException("call-undeclared-func");
@@ -306,28 +321,31 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
 
     @Override
     public Expression visitBlockStmt(C0Parser.BlockStmtContext ctx) {
-        /*if (!funcFlag) {
+        if (!funcFlag) {
             funcFlag = true;
         } else{
             List<SymbolTable> tableList = symMap.get(currentFunc);
             SymbolTable table = new SymbolTable(tableList.get(tableList.size() - 1), currentFunc);
             tableList.add(table);
             currentBlock++;
-        }*/
-        List<SymbolTable> tableList = symMap.get(currentFunc);
+        }
+        /*List<SymbolTable> tableList = symMap.get(currentFunc);
         SymbolTable table = new SymbolTable(tableList.get(tableList.size() - 1), currentFunc);
         tableList.add(table);
-        currentBlock++;
+        currentBlock++;*/
         Expression returnExpresstion = null;
         for (C0Parser.StmtContext stmtContext : ctx.stmt()) {
             if (stmtContext.returnStmt() != null) {
                 //System.out.println("return");
                 returnExpresstion = visit(stmtContext);
+                //System.out.println("return->"+returnExpresstion);
+                returnExpression.put(currentFunc, returnExpresstion);
+                //break;
             }
             else visit(stmtContext);
         }
         if (currentBlock > 0) currentBlock--;
-        if (returnExpresstion == null) {
+        if (returnExpresstion == null && returnExpression.get(currentFunc) == null) {
             return new Expression(0, Type.VOID);
         }
 
@@ -374,7 +392,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         if (e.getType() != Type.INT) {
             throw new RuntimeException("putint-not-int");
         }
-        System.out.println(e);
+        System.out.print("putint: "+e);
         return new Expression(0, Type.VOID);
     }
 
@@ -384,7 +402,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         if (e.getType() != Type.DOUBLE) {
             throw new RuntimeException("putdouble-not-double");
         }
-        System.out.println(e.getValue());
+        System.out.print("putdouble: "+e.getValue());
         return new Expression(0, Type.VOID);
     }
 
@@ -401,19 +419,19 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         if (e.getType() != Type.INT) {
             throw new RuntimeException("putchar-not-char");
         }
-        System.out.println(e.getValue());
+        System.out.print("putchar: "+e.getValue());
         return new Expression(0, Type.VOID);
     }
 
     @Override
     public Expression visitPutStr(C0Parser.PutStrContext ctx) {
-        System.out.println(ctx.str().getText());
+        System.out.print("putstr: "+ctx.str().getText());
         return new Expression(0, Type.VOID);
     }
 
     @Override
     public Expression visitPutLn(C0Parser.PutLnContext ctx) {
-        System.out.println();
+        System.out.println("");
         return new Expression(0, Type.VOID);
     }
 
@@ -427,11 +445,13 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         //System.out.println(funcTable);
         //System.out.println(currentFunc);
         List<FunctionParam> params = funcParam.get(currentFunc);
-        for (FunctionParam param : params) {
-            if (param.getParamName().equals(leftId)) {
-                isParam = true;
-                isConst = param.isConst();
-                break;
+        if (params != null) {
+            for (FunctionParam param : params) {
+                if (param.getParamName().equals(leftId)) {
+                    isParam = true;
+                    isConst = param.isConst();
+                    break;
+                }
             }
         }
         if (!isParam && table.getChainTable(leftId) == null) {
@@ -571,6 +591,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
     public void visitFuncToCheckType(C0Parser.FunctionContext ctx) {
         // TODO
         String funcName = ctx.IDENT().getText();
+        System.out.println(funcName);
         Type returnType = Utils.getType(ctx.ty.getText());
         Type actualType = Type.VOID;
         List<C0Parser.StmtContext> stmtList = ctx.blockStmt().stmt();
