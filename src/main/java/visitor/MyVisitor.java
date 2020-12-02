@@ -187,6 +187,42 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
     }
 
     @Override
+    public Expression visitWhileStmt(C0Parser.WhileStmtContext ctx) {
+        Expression e = visit(ctx.expr());
+        boolean condition = VisitorUtil.getCondition(e);
+        while (condition) {
+            visit(ctx.blockStmt());
+            e = visit(ctx.expr());
+            condition = VisitorUtil.getCondition(e);
+        }
+        return null;
+    }
+
+    @Override
+    public Expression visitIfStmt(C0Parser.IfStmtContext ctx) {
+        Expression e = visit(ctx.expr());
+        boolean condition = VisitorUtil.getCondition(e);
+        if (condition) {
+            visit(ctx.blockStmt());
+        } else {
+           if (ctx.elseStmt() != null) {
+               visit(ctx.elseStmt());
+           }
+        }
+        return null;
+    }
+
+    @Override
+    public Expression visitElseStmt(C0Parser.ElseStmtContext ctx) {
+        if (ctx.ifStmt() != null) {
+            visit(ctx.ifStmt());
+        } else {
+            visit(ctx.blockStmt());
+        }
+        return null;
+    }
+
+    @Override
     public Expression visitBlockStmt(C0Parser.BlockStmtContext ctx) {
         if (!funcFlag) {
             funcFlag = true;
@@ -199,7 +235,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         Expression returnExpresstion = null;
         for (C0Parser.StmtContext stmtContext : ctx.stmt()) {
             if (stmtContext.returnStmt() != null) {
-                System.out.println("return");
+                //System.out.println("return");
                 returnExpresstion = visit(stmtContext);
             }
             else visit(stmtContext);
@@ -300,7 +336,14 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
 
     @Override
     public Expression visitPutChar(C0Parser.PutCharContext ctx) {
-        Expression e = visit(ctx.expr());
+        Expression e;
+        if (ctx.CharLiteral() != null) {
+            int value = ctx.CharLiteral().getText().charAt(0);
+            e = new Expression(value, Type.INT);
+        } else if (ctx.UINT() != null) {
+            int value = Integer.parseInt(ctx.UINT().getText());
+            e = new Expression(value, Type.INT);
+        } else  e = visit(ctx.expr());
         if (e.getType() != Type.INT) {
             throw new RuntimeException("putchar-not-char");
         }
@@ -322,28 +365,35 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
 
     @Override
     public Expression visitAssignExpr(C0Parser.AssignExprContext ctx) {
-        boolean isParam = false;
+        boolean isParam = false, isConst = false;
         List<SymbolTable> tableList = symMap.get(currentFunc);
         SymbolTable table = tableList.get(currentBlock);
         String leftId = ctx.IDENT().getText();
         //if (funcTable.get(currentFunc).getParamMap() != null)
         //System.out.println(funcTable);
         //System.out.println(currentFunc);
-        if (funcTable.get(currentFunc).getParamMap() != null
-                && funcTable.get(currentFunc).getParamMap().get(leftId) == null
-                && table.getChainTable(leftId) == null) {
+        List<FunctionParam> params = funcParam.get(currentFunc);
+        for (FunctionParam param : params) {
+            if (param.getParamName().equals(leftId)) {
+                isParam = true;
+                isConst = param.isConst();
+                break;
+            }
+        }
+        if (!isParam && table.getChainTable(leftId) == null) {
             throw new RuntimeException("assign-to-undeclared-ident");
         } else {
             if (table.getChainTable(leftId) != null && table.getChainTable(leftId).isConst()) {
                 throw new RuntimeException("assign-to-const-ident");
-            } else if (funcTable.get(currentFunc).getParamMap().get(leftId) != null
-                    && funcTable.get(currentFunc).getParamMap().get(leftId).isConst()) {
+            } else if (isParam && isConst) {
                 throw new RuntimeException("assign-to-const-ident");
-            } else if (funcTable.get(currentFunc).getParamMap().get(leftId) != null) {
-                isParam = true;
             }
         }
         Expression e = visit(ctx.expr());
+        // TODO judge
+        if (e.getType() == Type.VOID) {
+            throw new RuntimeException("assign-void");
+        }
         if (!isParam) {
             SymbolEntry entry = table.getChainTable(leftId);
             entry.setInitialized(true);

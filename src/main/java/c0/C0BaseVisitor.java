@@ -89,6 +89,13 @@ public class C0BaseVisitor<T> extends AbstractParseTreeVisitor<T> implements C0V
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitElseStmt(C0Parser.ElseStmtContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitWhileStmt(C0Parser.WhileStmtContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

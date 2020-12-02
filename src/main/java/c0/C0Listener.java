@@ -110,6 +110,16 @@ public interface C0Listener extends ParseTreeListener {
 	 */
 	void exitIfStmt(C0Parser.IfStmtContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link C0Parser#elseStmt}.
+	 * @param ctx the parse tree
+	 */
+	void enterElseStmt(C0Parser.ElseStmtContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link C0Parser#elseStmt}.
+	 * @param ctx the parse tree
+	 */
+	void exitElseStmt(C0Parser.ElseStmtContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link C0Parser#whileStmt}.
 	 * @param ctx the parse tree
 	 */

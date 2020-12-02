@@ -73,6 +73,12 @@ public interface C0Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIfStmt(C0Parser.IfStmtContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link C0Parser#elseStmt}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElseStmt(C0Parser.ElseStmtContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link C0Parser#whileStmt}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

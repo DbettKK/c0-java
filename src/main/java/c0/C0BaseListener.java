@@ -138,6 +138,18 @@ public class C0BaseListener implements C0Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterElseStmt(C0Parser.ElseStmtContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitElseStmt(C0Parser.ElseStmtContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterWhileStmt(C0Parser.WhileStmtContext ctx) { }
 	/**
 	 * {@inheritDoc}

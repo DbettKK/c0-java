@@ -68,41 +68,57 @@ public class VisitorUtil {
                 break;
             case ">":
                 if (left.getType() == Type.INT) {
-                    return new Expression((int) left.getValue() > (int) right.getValue(), Type.VOID);
+                    return new Expression((int) left.getValue() > (int) right.getValue() ? 1 : 0, Type.INT);
                 } else if (left.getType() == Type.DOUBLE)
-                    return new Expression((double) left.getValue() > (double) right.getValue(), Type.VOID);
+                    return new Expression((double) left.getValue() > (double) right.getValue() ? 1 : 0, Type.INT);
                 break;
             case "<":
                 if (left.getType() == Type.INT) {
-                    return new Expression((int) left.getValue() < (int) right.getValue(), Type.VOID);
+                    return new Expression((int) left.getValue() < (int) right.getValue() ? 1 : 0, Type.INT);
                 } else if (left.getType() == Type.DOUBLE)
-                    return new Expression((double) left.getValue() < (double) right.getValue(), Type.VOID);
+                    return new Expression((double) left.getValue() < (double) right.getValue() ? 1 : 0, Type.INT);
                 break;
             case ">=":
                 if (left.getType() == Type.INT) {
-                    return new Expression((int) left.getValue() >= (int) right.getValue(), Type.VOID);
+                    return new Expression((int) left.getValue() >= (int) right.getValue() ? 1 : 0, Type.INT);
                 } else if (left.getType() == Type.DOUBLE)
-                    return new Expression((double) left.getValue() >= (double) right.getValue(), Type.VOID);
+                    return new Expression((double) left.getValue() >= (double) right.getValue() ? 1 : 0, Type.INT);
                 break;
             case "<=":
                 if (left.getType() == Type.INT) {
-                    return new Expression((int) left.getValue() <= (int) right.getValue(), Type.VOID);
+                    return new Expression((int) left.getValue() <= (int) right.getValue() ? 1 : 0, Type.INT);
                 } else if (left.getType() == Type.DOUBLE)
-                    return new Expression((double) left.getValue() <= (double) right.getValue(), Type.VOID);
+                    return new Expression((double) left.getValue() <= (double) right.getValue() ? 1 : 0, Type.INT);
                 break;
             case "==":
                 if (left.getType() == Type.INT) {
-                    return new Expression((int) left.getValue() == (int) right.getValue(), Type.VOID);
+                    return new Expression((int) left.getValue() == (int) right.getValue() ? 1 : 0, Type.INT);
                 } else if (left.getType() == Type.DOUBLE)
-                    return new Expression((double) left.getValue() == (double) right.getValue(), Type.VOID);
+                    return new Expression((double) left.getValue() == (double) right.getValue() ? 1 : 0, Type.INT);
                 break;
             case "!=":
                 if (left.getType() == Type.INT) {
-                    return new Expression((int) left.getValue() != (int) right.getValue(), Type.VOID);
+                    return new Expression((int) left.getValue() != (int) right.getValue() ? 1 : 0, Type.INT);
                 } else if (left.getType() == Type.DOUBLE)
-                    return new Expression((double) left.getValue() != (double) right.getValue(), Type.VOID);
+                    return new Expression((double) left.getValue() != (double) right.getValue() ? 1 : 0, Type.INT);
                 break;
         }
         return null;
+    }
+
+    public static boolean getCondition(Expression e) {
+        boolean condition = false;
+        if (e.getType() == Type.VOID) {
+            throw new RuntimeException("expect-bool-but-void");
+        }
+        if (e.getType() == Type.DOUBLE) {
+            double value = (double) e.getValue();
+            condition = value != 0;
+        }
+        if (e.getType() == Type.INT) {
+            int value = (int) e.getValue();
+            condition = value != 0;
+        }
+        return condition;
     }
 }
