@@ -220,6 +220,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         //System.out.println("-----Enter->" + funcName);
         //System.out.println(funcParam);
         visit(ctx.blockStmt());
+
         Expression returnExpresstion = returnExpression.get(funcName);
         if (returnExpresstion == null) {
             returnExpresstion  = new Expression(0, Type.VOID);
@@ -235,8 +236,11 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         //currentFunc = tmp;
         //funcParam = tmpMapParam;
         Type actualReturnType = returnExpresstion.getType();
-        if (actualReturnType != Utils.getType(ctx.ty.getText()))
+        /*if (actualReturnType != Utils.getType(ctx.ty.getText())){
+            System.out.println(returnExpresstion);
             throw new RuntimeException("return-type-error");
+        }*/
+
         funcTable.put(funcName, new Function(
                 funcName,
                 paramMap,
@@ -272,7 +276,15 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         Map<String, List<FunctionParam>> newFuncParam = new HashMap<>(funcParam);
         tmpFuncParamStack.push(newFuncParam);
         //System.out.println("stored->" + newFuncParam);
-        Expression returnExpression = visit(functionNode.getFunctionContext());
+        visit(functionNode.getFunctionContext());
+        Expression returnExpression = this.returnExpression.get(funcName);
+        if (returnExpression == null) {
+            if (funcTable.get(funcName).getReturnType() != Type.VOID) {
+                throw new RuntimeException("func-no-return");
+            }
+        }
+        funcTable.get(funcName).setReturnValue(returnExpression.getValue());
+        //System.out.println(this.returnExpression.get(funcName));
         currentFunc = tmpFuncName.pop();
         currentBlock = tmpBlock.pop();
         //System.out.println(currentBlock);
@@ -291,6 +303,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
 
     @Override
     public Expression visitWhileStmt(C0Parser.WhileStmtContext ctx) {
+        // break or continue
         //System.out.println("enter");
         Expression e = visit(ctx.expr());
         boolean condition = VisitorUtil.getCondition(e);
@@ -355,7 +368,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             if (stmtContext.returnStmt() != null) {
                 System.out.println("------return");
                 returnExpresstion = visit(stmtContext);
-                //System.out.println("return->"+returnExpresstion);
+                System.out.println("return->"+returnExpresstion);
                 returnExpression.put(currentFunc, returnExpresstion);
                 return returnExpresstion;
             }
@@ -369,7 +382,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         if (currentBlock > 0) currentBlock--;
 
         if (returnExpresstion == null && returnExpression.get(currentFunc) == null) {
-            return new Expression("returns", Type.VOID);
+            return null;
         }
 
         return returnExpresstion;
