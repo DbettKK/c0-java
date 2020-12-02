@@ -43,6 +43,13 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             }
         }
         callFuncParam.put("main", new ArrayList<>());
+        funcTable.put("main", new Function(
+                "main",
+                new HashMap<>(),
+                Type.VOID,
+                funcOffset++,
+                0
+        ));
         for (ParseTree child : children) {
             if (child instanceof C0Parser.FunctionContext) {
                 String funcName = ((C0Parser.FunctionContext) child).IDENT().getText();
@@ -143,7 +150,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
                         param.IDENT().getText(),
                         Utils.getType(param.ty.getText()),
                         paramOffset,
-                        actualParamList.get(paramOffset)
+                        actualParamList.get(paramOffset).getValue()
                 ));
                 paramOffset++;
             }
@@ -162,7 +169,10 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             paramList.add(paramMap.get(s));
         }
         funcParam.put(funcName, paramList);
+        currentBlock = 0;
+        String tmp = currentFunc;
         Expression returnExpresstion = visit(ctx.blockStmt());
+        currentFunc = tmp;
         Type actualReturnType = returnExpresstion.getType();
         if (actualReturnType != Utils.getType(ctx.ty.getText()))
             throw new RuntimeException("return-type-error");
@@ -194,15 +204,20 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             }
             else visit(stmtContext);
         }
+        if (currentBlock > 0) currentBlock--;
         if (returnExpresstion == null) {
             return new Expression(0, Type.VOID);
         }
+
         return returnExpresstion;
     }
 
     @Override
     public Expression visitReturnStmt(C0Parser.ReturnStmtContext ctx) {
-        return visit(ctx.expr());
+        if (ctx.expr() != null)
+            return visit(ctx.expr());
+        else
+            return new Expression(0, Type.VOID);
     }
 
     @Override
@@ -229,10 +244,14 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
                 paramList.add(param);
             }
         }
+        int tmp = currentBlock;
+        String tmpFunc = currentFunc;
         callFuncParam.put(funcName, paramList);
-
+        Map<String, List<Expression>> tmpMap = callFuncParam;
         Expression returnExpression = visit(functionNode.getFunctionContext());
-
+        currentBlock = tmp;
+        currentFunc = tmpFunc;
+        callFuncParam = tmpMap;
 
         //if (funcTable.get(funcName) == null) throw new RuntimeException("call-undeclared-func");
         /*Function function = funcTable.get(funcName);
@@ -250,7 +269,11 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         List<SymbolTable> tableList = symMap.get(currentFunc);
         SymbolTable table = tableList.get(currentBlock);
         String leftId = ctx.IDENT().getText();
-        if (funcTable.get(currentFunc).getParamMap().get(leftId) == null
+        //if (funcTable.get(currentFunc).getParamMap() != null)
+        System.out.println(funcTable);
+        System.out.println(currentFunc);
+        if (funcTable.get(currentFunc).getParamMap() != null
+                && funcTable.get(currentFunc).getParamMap().get(leftId) == null
                 && table.getChainTable(leftId) == null) {
             throw new RuntimeException("assign-to-undeclared-ident");
         } else {
@@ -334,10 +357,15 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             isParam = false;
             //isParam = funcTable.get(currentFunc).getParamMap().get(ident) != null;
             List<FunctionParam> paramList = funcParam.get(currentFunc);
-            for (FunctionParam functionParam : paramList) {
-                if (functionParam.getParamName().equals(ident)) {
-                    isParam = true;
-                    param = functionParam;
+            System.out.println(currentFunc);
+            System.out.println(paramList);
+            System.out.println(ident);
+            if (paramList != null) {
+                for (FunctionParam functionParam : paramList) {
+                    if (functionParam.getParamName().equals(ident)) {
+                        isParam = true;
+                        param = functionParam;
+                    }
                 }
             }
         }
