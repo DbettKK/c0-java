@@ -37,7 +37,7 @@ public class Main {
         C0Parser.ProgramContext tree = parser.program();
         //ParseTreeWalker walker = new ParseTreeWalker();
         //walker.walk(new MyParserListener(), tree);
-        //MyVisitor visitor = new MyVisitor();
-        //visitor.visit(tree);
+        MyVisitor visitor = new MyVisitor();
+        visitor.visit(tree);
     }
 }

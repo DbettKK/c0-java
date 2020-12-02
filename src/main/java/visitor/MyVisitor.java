@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import javax.xml.transform.Source;
+import java.lang.annotation.Target;
 import java.util.*;
 
 public class MyVisitor extends C0BaseVisitor<Expression> {
@@ -291,7 +292,9 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         Expression e = visit(ctx.expr());
         boolean condition = VisitorUtil.getCondition(e);
         while (condition) {
+            //System.out.println(currentBlock);
             visit(ctx.blockStmt());
+            //System.out.println(currentBlock);
             e = visit(ctx.expr());
             condition = VisitorUtil.getCondition(e);
         }
@@ -332,6 +335,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             tableList.add(table);
             currentBlock++;
         }
+
         /*List<SymbolTable> tableList = symMap.get(currentFunc);
         SymbolTable table = new SymbolTable(tableList.get(tableList.size() - 1), currentFunc);
         tableList.add(table);
@@ -347,7 +351,11 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             }
             else visit(stmtContext);
         }
+        List<SymbolTable> tableList = symMap.get(currentFunc);
+        tableList.remove(tableList.size()-1);
+        //SymbolTable table = new SymbolTable(tableList.get(tableList.size() - 1), currentFunc);
         if (currentBlock > 0) currentBlock--;
+
         if (returnExpresstion == null && returnExpression.get(currentFunc) == null) {
             return new Expression(0, Type.VOID);
         }
@@ -476,7 +484,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             entry.setInitialized(true);
             entry.setValue(e.getValue());
         }
-        System.out.println(leftId + " = " + e);
+        //System.out.println(leftId + " = " + e);
         // 赋值语句无法使用 返回void
         return new Expression(0, Type.VOID);
     }
