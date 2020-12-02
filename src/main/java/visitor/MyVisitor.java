@@ -274,6 +274,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         Expression returnExpression = visit(functionNode.getFunctionContext());
         currentFunc = tmpFuncName.pop();
         currentBlock = tmpBlock.pop();
+        //System.out.println(currentBlock);
         //System.out.println("cur->" + tmpBlock);
         /*callFuncParam = tmpMap;
         funcParam = tmpMapParam;*/
@@ -289,11 +290,15 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
 
     @Override
     public Expression visitWhileStmt(C0Parser.WhileStmtContext ctx) {
+        System.out.println("enter");
         Expression e = visit(ctx.expr());
         boolean condition = VisitorUtil.getCondition(e);
         while (condition) {
+
             //System.out.println(currentBlock);
             visit(ctx.blockStmt());
+            List<SymbolTable> tableList = symMap.get(currentFunc);
+            tableList.remove(tableList.size()-1);
             //System.out.println(currentBlock);
             e = visit(ctx.expr());
             condition = VisitorUtil.getCondition(e);
@@ -351,8 +356,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             }
             else visit(stmtContext);
         }
-        List<SymbolTable> tableList = symMap.get(currentFunc);
-        tableList.remove(tableList.size()-1);
+
         //SymbolTable table = new SymbolTable(tableList.get(tableList.size() - 1), currentFunc);
         if (currentBlock > 0) currentBlock--;
 
@@ -569,7 +573,8 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         }
         if (!isParam && entry == null) {
             throw new RuntimeException("use-undeclared-ident");
-        } else if (entry != null && !entry.isInitialized()){
+        } else if (entry != null && !entry.isInitialized()) {
+            System.out.println(table);
             throw new RuntimeException("use-uninitialized-ident");
         } else {
             if (isParam) {
