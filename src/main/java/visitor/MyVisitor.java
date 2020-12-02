@@ -221,7 +221,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         //System.out.println(funcParam);
         Expression visit = visit(ctx.blockStmt());
         if (funcName.equals("main")) {
-            if (visit.getType() != Utils.getType(ctx.ty.getText())) {
+            if (visit!=null&& visit.getType() != Utils.getType(ctx.ty.getText())) {
                 throw new RuntimeException();
             }
         }
@@ -291,9 +291,9 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             }
         }
         if (returnExpression != null) {
-            if (funcTable.get(funcName).getReturnType() != returnExpression.getValue()) {
+            /*if (funcTable.get(funcName).getReturnType() != returnExpression.getValue()) {
                 throw new RuntimeException("");
-            }
+            }*/
             funcTable.get(funcName).setReturnValue(returnExpression.getValue());
         }
 
