@@ -298,7 +298,8 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         while (condition) {
 
             //System.out.println(currentBlock);
-            visit(ctx.blockStmt());
+           Expression visit = visit(ctx.blockStmt());
+           if (visit != null) return visit;
             List<SymbolTable> tableList = symMap.get(currentFunc);
             for (int i = currentBlock + 1 ; i < tableList.size() ; i++){
                 tableList.remove(i);
@@ -316,7 +317,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         Expression e = visit(ctx.expr());
         boolean condition = VisitorUtil.getCondition(e);
         if (condition) {
-            visit(ctx.blockStmt());
+            return visit(ctx.blockStmt());
         } else {
            if (ctx.elseStmt() != null) {
                visit(ctx.elseStmt());
@@ -328,11 +329,10 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
     @Override
     public Expression visitElseStmt(C0Parser.ElseStmtContext ctx) {
         if (ctx.ifStmt() != null) {
-            visit(ctx.ifStmt());
+            return visit(ctx.ifStmt());
         } else {
-            visit(ctx.blockStmt());
+            return visit(ctx.blockStmt());
         }
-        return null;
     }
 
     @Override
@@ -353,20 +353,23 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         Expression returnExpresstion = null;
         for (C0Parser.StmtContext stmtContext : ctx.stmt()) {
             if (stmtContext.returnStmt() != null) {
-                //System.out.println("return");
+                System.out.println("------return");
                 returnExpresstion = visit(stmtContext);
                 //System.out.println("return->"+returnExpresstion);
                 returnExpression.put(currentFunc, returnExpresstion);
-                //break;
+                return returnExpresstion;
             }
-            else visit(stmtContext);
+            else {
+                Expression visit = visit(stmtContext);
+                if (visit!=null) return visit;
+            }
         }
 
         //SymbolTable table = new SymbolTable(tableList.get(tableList.size() - 1), currentFunc);
         if (currentBlock > 0) currentBlock--;
 
         if (returnExpresstion == null && returnExpression.get(currentFunc) == null) {
-            return new Expression(0, Type.VOID);
+            return new Expression("returns", Type.VOID);
         }
 
         return returnExpresstion;
@@ -616,6 +619,12 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         double d = Double.parseDouble(doubleText);
         long l = Double.doubleToRawLongBits(d);
         return new Expression(d, Type.DOUBLE);
+    }
+
+    @Override
+    public Expression visitExprStmt(C0Parser.ExprStmtContext ctx) {
+        visit(ctx.expr());
+        return null;
     }
 
     public void visitFuncToCheckType(C0Parser.FunctionContext ctx) {
