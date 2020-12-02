@@ -283,7 +283,10 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
                 throw new RuntimeException("func-no-return");
             }
         }
-        funcTable.get(funcName).setReturnValue(returnExpression.getValue());
+        if (returnExpression != null) {
+            funcTable.get(funcName).setReturnValue(returnExpression.getValue());
+        }
+
         //System.out.println(this.returnExpression.get(funcName));
         currentFunc = tmpFuncName.pop();
         currentBlock = tmpBlock.pop();
