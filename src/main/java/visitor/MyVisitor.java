@@ -290,16 +290,19 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
 
     @Override
     public Expression visitWhileStmt(C0Parser.WhileStmtContext ctx) {
-        System.out.println("enter");
+        //System.out.println("enter");
         Expression e = visit(ctx.expr());
         boolean condition = VisitorUtil.getCondition(e);
-        System.out.println(condition);
+        //System.out.println(condition);
         while (condition) {
 
             //System.out.println(currentBlock);
             visit(ctx.blockStmt());
             List<SymbolTable> tableList = symMap.get(currentFunc);
-            tableList.remove(tableList.size()-1);
+            for (int i = currentBlock + 1 ; i < tableList.size() ; i++){
+                tableList.remove(i);
+            }
+
             //System.out.println(currentBlock);
             e = visit(ctx.expr());
             condition = VisitorUtil.getCondition(e);
@@ -551,6 +554,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         boolean isParam;
         FunctionParam param = null;
         List<SymbolTable> tableList = symMap.get(currentFunc);
+        //System.out.println(ctx.IDENT().getText());
         SymbolTable table = tableList.get(currentBlock);
         String ident = ctx.IDENT().getText();
         SymbolEntry entry = table.getChainTable(ident);
@@ -575,7 +579,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         if (!isParam && entry == null) {
             throw new RuntimeException("use-undeclared-ident");
         } else if (entry != null && !entry.isInitialized()) {
-            System.out.println(table);
+            //System.out.println(table);
             throw new RuntimeException("use-uninitialized-ident");
         } else {
             if (isParam) {
@@ -608,7 +612,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
     public void visitFuncToCheckType(C0Parser.FunctionContext ctx) {
         // TODO
         String funcName = ctx.IDENT().getText();
-        System.out.println(funcName);
+        //System.out.println(funcName);
         Type returnType = Utils.getType(ctx.ty.getText());
         Type actualType = Type.VOID;
         List<C0Parser.StmtContext> stmtList = ctx.blockStmt().stmt();
@@ -626,7 +630,7 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             }
         }
         if (returnType != actualType && is) {
-            System.out.println(actualType);
+            //System.out.println(actualType);
             throw new RuntimeException("return-type-error");
         }
     }
