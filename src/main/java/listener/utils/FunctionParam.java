@@ -5,12 +5,21 @@ public class FunctionParam implements ParamAndLocal{
     private String paramName;
     private Type paramType;
     private int offset;
+    private Object value;
 
     public FunctionParam(boolean isConst, String paramName, Type paramType, int offset) {
         this.isConst = isConst;
         this.paramName = paramName;
         this.paramType = paramType;
         this.offset = offset;
+    }
+
+    public FunctionParam(boolean isConst, String paramName, Type paramType, int offset, Object value) {
+        this.isConst = isConst;
+        this.paramName = paramName;
+        this.paramType = paramType;
+        this.offset = offset;
+        this.value = value;
     }
 
     public int getOffset() {
@@ -48,7 +57,13 @@ public class FunctionParam implements ParamAndLocal{
         this.paramName = paramName;
     }
 
+    public Object getValue() {
+        return value;
+    }
 
+    public void setValue(Object value) {
+        this.value = value;
+    }
 
     @Override
     public String toString() {
@@ -56,6 +71,8 @@ public class FunctionParam implements ParamAndLocal{
                 "isConst=" + isConst +
                 ", paramName='" + paramName + '\'' +
                 ", paramType=" + paramType +
+                ", offset=" + offset +
+                ", value=" + value +
                 '}';
     }
 }

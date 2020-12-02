@@ -43,6 +43,16 @@
           <option name="language" value="Java" />
           <option name="generateVisitor" value="true" />
         </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$APPLICATION_CONFIG_DIR$/scratches/C0.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="D:\大学\大三上\编译\git仓库\c0-java\src\main\java\c0" />
+          <option name="libDir" value="" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="" />
+          <option name="language" value="Java" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
       </list>
     </option>
   </component>

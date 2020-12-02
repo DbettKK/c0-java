@@ -9,12 +9,21 @@ public class Function {
     private Map<String, FunctionParam> paramMap;
     private Type returnType;
     private int offset;
+    private Object returnValue;
 
     public Function(String funcName, Map<String, FunctionParam> paramMap, Type returnType, int offset) {
         this.funcName = funcName;
         this.paramMap = paramMap;
         this.returnType = returnType;
         this.offset = offset;
+    }
+
+    public Function(String funcName, Map<String, FunctionParam> paramMap, Type returnType, int offset, Object returValue) {
+        this.funcName = funcName;
+        this.paramMap = paramMap;
+        this.returnType = returnType;
+        this.offset = offset;
+        this.returnValue = returValue;
     }
 
     public String getFuncName() {
@@ -49,6 +58,14 @@ public class Function {
         this.offset = offset;
     }
 
+    public Object getReturnValue() {
+        return returnValue;
+    }
+
+    public void setReturnValue(Object returValue) {
+        this.returnValue = returValue;
+    }
+
     @Override
     public String toString() {
         return "Function{" +
@@ -56,6 +73,7 @@ public class Function {
                 ", paramMap=" + paramMap +
                 ", returnType=" + returnType +
                 ", offset=" + offset +
+                ", returnValue=" + returnValue +
                 '}';
     }
 
