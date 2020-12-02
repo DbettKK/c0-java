@@ -219,7 +219,13 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         //System.out.println("cur Func->" + currentFunc);
         //System.out.println("-----Enter->" + funcName);
         //System.out.println(funcParam);
-        visit(ctx.blockStmt());
+        Expression visit = visit(ctx.blockStmt());
+        if (funcName.equals("main")) {
+            if (visit.getType() != Utils.getType(ctx.ty.getText())) {
+                throw new RuntimeException();
+            }
+        }
+
 
         Expression returnExpresstion = returnExpression.get(funcName);
         if (returnExpresstion == null) {
@@ -278,12 +284,16 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         //System.out.println("stored->" + newFuncParam);
         visit(functionNode.getFunctionContext());
         Expression returnExpression = this.returnExpression.get(funcName);
+        System.out.println(returnExpression);
         if (returnExpression == null) {
             if (funcTable.get(funcName).getReturnType() != Type.VOID) {
                 throw new RuntimeException("func-no-return");
             }
         }
         if (returnExpression != null) {
+            if (funcTable.get(funcName).getReturnType() != returnExpression.getValue()) {
+                throw new RuntimeException("");
+            }
             funcTable.get(funcName).setReturnValue(returnExpression.getValue());
         }
 
