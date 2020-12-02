@@ -3,10 +3,24 @@ package listener.utils;
 public class SymbolEntry implements ParamAndLocal {
     private boolean isConstant;
     private boolean isInitialized;
+    private boolean isParam;
+    private boolean isGlobal;
+    private boolean isLocal;
+
     private int stackOffset;
+
 
     private Type type;
     private Object value;
+
+    public SymbolEntry(boolean isConstant, boolean isParam, boolean isGlobal, boolean isLocal, int stackOffset, Type type) {
+        this.isConstant = isConstant;
+        this.isParam = isParam;
+        this.isGlobal = isGlobal;
+        this.isLocal = isLocal;
+        this.stackOffset = stackOffset;
+        this.type = type;
+    }
 
     /**
      * @param isConstant 是否为常量
@@ -32,6 +46,30 @@ public class SymbolEntry implements ParamAndLocal {
         this.stackOffset = stackOffset;
         this.type = type;
         this.value = value;
+    }
+
+    public boolean isParam() {
+        return isParam;
+    }
+
+    public void setParam(boolean param) {
+        isParam = param;
+    }
+
+    public boolean isGlobal() {
+        return isGlobal;
+    }
+
+    public void setGlobal(boolean global) {
+        isGlobal = global;
+    }
+
+    public boolean isLocal() {
+        return isLocal;
+    }
+
+    public void setLocal(boolean local) {
+        isLocal = local;
     }
 
     /**

@@ -11,6 +11,10 @@ public class SymbolTable {
     private int offset = 0;
     private String funcName;
 
+    public SymbolTable getPrevTable() {
+        return prevTable;
+    }
+
     public int getOffset() {
         return offset;
     }
