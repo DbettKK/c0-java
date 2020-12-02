@@ -263,15 +263,72 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
         return returnExpression;
     }
 
+    @Override
+    public Expression visitGetInt(C0Parser.GetIntContext ctx) {
+        return new Expression(1, Type.INT);
+    }
+
+    @Override
+    public Expression visitGetChar(C0Parser.GetCharContext ctx) {
+        return new Expression(97, Type.INT);
+    }
+
+    @Override
+    public Expression visitGetDouble(C0Parser.GetDoubleContext ctx) {
+        return new Expression(1.5, Type.DOUBLE);
+    }
+
+    @Override
+    public Expression visitPutInt(C0Parser.PutIntContext ctx) {
+        Expression e = visit(ctx.expr());
+        if (e.getType() != Type.INT) {
+            throw new RuntimeException("putint-not-int");
+        }
+        System.out.println(e);
+        return new Expression(0, Type.VOID);
+    }
+
+    @Override
+    public Expression visitPutDouble(C0Parser.PutDoubleContext ctx) {
+        Expression e = visit(ctx.expr());
+        if (e.getType() != Type.DOUBLE) {
+            throw new RuntimeException("putdouble-not-double");
+        }
+        System.out.println(e.getValue());
+        return new Expression(0, Type.VOID);
+    }
+
+    @Override
+    public Expression visitPutChar(C0Parser.PutCharContext ctx) {
+        Expression e = visit(ctx.expr());
+        if (e.getType() != Type.INT) {
+            throw new RuntimeException("putchar-not-char");
+        }
+        System.out.println(e.getValue());
+        return new Expression(0, Type.VOID);
+    }
+
+    @Override
+    public Expression visitPutStr(C0Parser.PutStrContext ctx) {
+        System.out.println(ctx.str().getText());
+        return new Expression(0, Type.VOID);
+    }
+
+    @Override
+    public Expression visitPutLn(C0Parser.PutLnContext ctx) {
+        System.out.println();
+        return new Expression(0, Type.VOID);
+    }
 
     @Override
     public Expression visitAssignExpr(C0Parser.AssignExprContext ctx) {
+        boolean isParam = false;
         List<SymbolTable> tableList = symMap.get(currentFunc);
         SymbolTable table = tableList.get(currentBlock);
         String leftId = ctx.IDENT().getText();
         //if (funcTable.get(currentFunc).getParamMap() != null)
-        System.out.println(funcTable);
-        System.out.println(currentFunc);
+        //System.out.println(funcTable);
+        //System.out.println(currentFunc);
         if (funcTable.get(currentFunc).getParamMap() != null
                 && funcTable.get(currentFunc).getParamMap().get(leftId) == null
                 && table.getChainTable(leftId) == null) {
@@ -282,10 +339,16 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             } else if (funcTable.get(currentFunc).getParamMap().get(leftId) != null
                     && funcTable.get(currentFunc).getParamMap().get(leftId).isConst()) {
                 throw new RuntimeException("assign-to-const-ident");
+            } else if (funcTable.get(currentFunc).getParamMap().get(leftId) != null) {
+                isParam = true;
             }
         }
         Expression e = visit(ctx.expr());
-
+        if (!isParam) {
+            SymbolEntry entry = table.getChainTable(leftId);
+            entry.setInitialized(true);
+            entry.setValue(e.getValue());
+        }
         System.out.println(leftId + " = " + e);
         // 赋值语句无法使用 返回void
         return new Expression(0, Type.VOID);
@@ -357,9 +420,9 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
             isParam = false;
             //isParam = funcTable.get(currentFunc).getParamMap().get(ident) != null;
             List<FunctionParam> paramList = funcParam.get(currentFunc);
-            System.out.println(currentFunc);
-            System.out.println(paramList);
-            System.out.println(ident);
+            //System.out.println(currentFunc);
+            //System.out.println(paramList);
+            //System.out.println(ident);
             if (paramList != null) {
                 for (FunctionParam functionParam : paramList) {
                     if (functionParam.getParamName().equals(ident)) {
