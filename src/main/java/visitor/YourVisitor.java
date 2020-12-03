@@ -79,6 +79,11 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         }
 
         visit(ctx.blockStmt());
+        if (!currentQueue.isEmpty() && currentQueue.peekLast().getInstruction() != InstructionEnum.RET) {
+            if (currentFunction.getReturnType() != Type.VOID) {
+                throw new RuntimeException("all-need-return");
+            }
+        }
         if (returnMap.get(funcName) == null) {
             // 没有return 先检查返回类型
             if (newFunction.getReturnType() != Type.VOID) {

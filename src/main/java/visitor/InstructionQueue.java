@@ -24,7 +24,9 @@ public class InstructionQueue implements Serializable {
         index--;
         return instructions.pollLast();
     }
-
+    public Instruction peekLast() {
+        return instructions.peekLast();
+    }
     public boolean isEmpty() {
         return instructions.isEmpty();
     }
