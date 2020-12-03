@@ -18,6 +18,10 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     int funcOffset = 0;
     Map<String, Type> returnMap = new HashMap<>();
     boolean isFuncBlock, isBreak, isContinue;
+    Stack<Integer> brStack = new Stack<>();
+    Stack<Integer> contStack = new Stack<>();
+    Stack<Boolean> isContStack = new Stack<>();
+    Stack<Boolean> isBrStack = new Stack<>();
     int breakIndex = -1, continueIndex = -1;
     public static List<Global> global = new ArrayList<>();
 
@@ -156,7 +160,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
                     new Instruction(InstructionEnum.BR, currentQueue.size() - index + 1));
         }
         // 这一步应该是不需要的
-        //currentQueue.add(new Instruction(InstructionEnum.BR, 0));
+        currentQueue.add(new Instruction(InstructionEnum.BR, 0));
         return Type.VOID;
     }
 
@@ -171,7 +175,8 @@ public class YourVisitor extends C0BaseVisitor<Type> {
 
     @Override
     public Type visitWhileStmt(C0Parser.WhileStmtContext ctx) {
-        isBreak = isContinue = false;
+        isBrStack.push(false);
+        isContStack.push(false);
         //currentQueue.add(new Instruction(InstructionEnum.BR, 0));
         int indexInit = currentQueue.getIndex();
         visit(ctx.expr());
@@ -179,12 +184,16 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         currentQueue.add(new Instruction(InstructionEnum.BR, 0));
         int index = currentQueue.getIndex();
         visit(ctx.blockStmt());
-        if (isBreak) {
+        if (isBrStack.pop()) {
+            //System.out.println(breakIndex);
+            //System.out.println(currentQueue.size());
+            breakIndex = brStack.pop();
             currentQueue.change(breakIndex,
                     new Instruction(InstructionEnum.BR, currentQueue.size() - breakIndex + 1));
             breakIndex = -1;
         }
-        if (isContinue) {
+        if (isContStack.pop()) {
+            continueIndex = contStack.pop();
             currentQueue.change(continueIndex,
                     new Instruction(InstructionEnum.BR, indexInit - continueIndex));
             continueIndex = -1;
@@ -206,18 +215,17 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         List<C0Parser.StmtContext> statements = ctx.stmt();
         for (C0Parser.StmtContext statement : statements) {
             if (statement.breakStmt() != null) {
-                if (!isBreak) {
-                    isBreak = true;
-                    currentQueue.add(new Instruction(InstructionEnum.BR, 0));
-                    breakIndex = currentQueue.getIndex();
-                }
+                isBrStack.pop();
+                isBrStack.push(true);
+                currentQueue.add(new Instruction(InstructionEnum.BR, 0));
+                breakIndex = currentQueue.getIndex();
+                brStack.push(breakIndex);
             } else if (statement.continueStmt() != null) {
-                if (!isContinue) {
-                    isContinue = true;
-                    currentQueue.add(new Instruction(InstructionEnum.BR, 0));
-                    continueIndex = currentQueue.getIndex();
-                }
-
+                isContStack.pop();
+                isContStack.push(true);
+                currentQueue.add(new Instruction(InstructionEnum.BR, 0));
+                continueIndex = currentQueue.getIndex();
+                contStack.push(continueIndex);
             }
             visit(statement);
         }
@@ -334,7 +342,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         if (entry == null) {
             throw new RuntimeException("assign-to-undeclared-ident");
         }
-        identSpecify(ident, entry);
+        identLeftSpecify(ident, entry);
         Type type = visit(ctx.expr());
         if (entry.getType() != type) {
             throw new RuntimeException("assign-type-conflict");
@@ -527,6 +535,29 @@ public class YourVisitor extends C0BaseVisitor<Type> {
             if (locOffset == -1) throw new RuntimeException("locOffset-error");
             currentQueue.add(new Instruction(InstructionEnum.ARGA, locOffset));
             currentQueue.add(new Instruction(InstructionEnum.LOAD64, null));
+        }
+    }
+
+    public void identLeftSpecify(String ident, SymbolEntry entry) {
+        //System.out.println(currentFunction.getFuncName());
+        if (entry.isGlobal()) {
+            currentQueue.add(new Instruction(InstructionEnum.GLOBA, entry.getStackOffset()));
+            //currentQueue.add(new Instruction(InstructionEnum.LOAD64, null));
+        } else if (entry.isLocal()) {
+            currentQueue.add(new Instruction(InstructionEnum.LOCA,
+                    entry.getLocalVarOffset()));
+            //currentQueue.add(new Instruction(InstructionEnum.LOAD64, null));
+        } else if (entry.isParam()) {
+            List<FunctionParam> paramList = currentFunction.getParamList();
+            int locOffset = -1;
+            for (int i = 0; i < paramList.size(); i++) {
+                if (paramList.get(i).getParamName().equals(ident)) {
+                    locOffset = i;
+                }
+            }
+            if (locOffset == -1) throw new RuntimeException("locOffset-error");
+            currentQueue.add(new Instruction(InstructionEnum.ARGA, locOffset));
+            //currentQueue.add(new Instruction(InstructionEnum.LOAD64, null));
         }
     }
 

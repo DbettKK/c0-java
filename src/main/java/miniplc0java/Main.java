@@ -27,7 +27,7 @@ public class Main {
     }
     public static void main(String[] args) throws IOException, RecognitionException {
         //File file = new File(args[0]);
-        FileOutputStream stream = new FileOutputStream(new File("D:/asm.O0"));
+        FileOutputStream stream = new FileOutputStream(new File("D:/asm.o0"));
         File file = new File("D:/c.c0");
         InputStream in = new FileInputStream(file);
         //InputStream in = System.in;
@@ -49,8 +49,9 @@ public class Main {
         /*for (String s : YourVisitor.funcTable.keySet()) {
             System.out.println("FUNC: " + s);
             InstructionQueue instructions = YourVisitor.funcTable.get(s).getInstructions();
+            int cnt = 0;
             while (!instructions.isEmpty()) {
-                System.out.println(instructions.poll());
+                System.out.println(cnt++ + ": " +instructions.poll());
             }
             System.out.println("----------------------------");
         }*/
