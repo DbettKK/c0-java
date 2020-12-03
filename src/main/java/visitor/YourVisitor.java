@@ -534,9 +534,17 @@ public class YourVisitor extends C0BaseVisitor<Type> {
 
     @Override
     public Type visitPutChar(C0Parser.PutCharContext ctx) {
-        Type type = visit(ctx.expr());
-        if (type != Type.INT) {
-            throw new RuntimeException("putChar-error");
+        if (ctx.CharLiteral() != null) {
+            int value = ctx.CharLiteral().getText().charAt(0);
+            currentQueue.add(new Instruction(InstructionEnum.PUSH, value));
+        } else if (ctx.UINT() != null) {
+            int value = Integer.parseInt(ctx.UINT().getText());
+            currentQueue.add(new Instruction(InstructionEnum.PUSH, value));
+        } else  {
+            Type type = visit(ctx.expr());
+            if (type != Type.INT) {
+                throw new RuntimeException("putChar-error");
+            }
         }
         currentQueue.add(new Instruction(InstructionEnum.PRINTC, null));
         return Type.VOID;
