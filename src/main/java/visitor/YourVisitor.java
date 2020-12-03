@@ -17,8 +17,8 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     public static Map<String, Function> funcTable = new HashMap<>();
     int funcOffset = 0;
     Map<String, Type> returnMap = new HashMap<>();
-    boolean isFuncBlock;
-
+    boolean isFuncBlock, isBreak, isContinue;
+    int breakIndex = -1, continueIndex = -1;
     public static List<Global> global = new ArrayList<>();
 
     @Override
@@ -171,13 +171,25 @@ public class YourVisitor extends C0BaseVisitor<Type> {
 
     @Override
     public Type visitWhileStmt(C0Parser.WhileStmtContext ctx) {
-        currentQueue.add(new Instruction(InstructionEnum.BR, 0));
+        isBreak = isContinue = false;
+        //currentQueue.add(new Instruction(InstructionEnum.BR, 0));
         int indexInit = currentQueue.getIndex();
         visit(ctx.expr());
         currentQueue.add(new Instruction(InstructionEnum.BRTRUE, 1));
         currentQueue.add(new Instruction(InstructionEnum.BR, 0));
         int index = currentQueue.getIndex();
         visit(ctx.blockStmt());
+        if (isBreak) {
+            currentQueue.change(breakIndex,
+                    new Instruction(InstructionEnum.BR, currentQueue.size() - breakIndex + 1));
+            breakIndex = -1;
+        }
+        if (isContinue) {
+            currentQueue.change(continueIndex,
+                    new Instruction(InstructionEnum.BR, indexInit - continueIndex));
+            continueIndex = -1;
+        }
+
         currentQueue.change(index,
                 new Instruction(InstructionEnum.BR, currentQueue.size() - index + 1));
         currentQueue.add(new Instruction(InstructionEnum.BR, indexInit - currentQueue.size() - 1));
@@ -194,8 +206,17 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         List<C0Parser.StmtContext> statements = ctx.stmt();
         for (C0Parser.StmtContext statement : statements) {
             if (statement.breakStmt() != null) {
-
+                if (!isBreak) {
+                    isBreak = true;
+                    currentQueue.add(new Instruction(InstructionEnum.BR, 0));
+                    breakIndex = currentQueue.getIndex();
+                }
             } else if (statement.continueStmt() != null) {
+                if (!isContinue) {
+                    isContinue = true;
+                    currentQueue.add(new Instruction(InstructionEnum.BR, 0));
+                    continueIndex = currentQueue.getIndex();
+                }
 
             }
             visit(statement);

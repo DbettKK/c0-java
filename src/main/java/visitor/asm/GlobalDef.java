@@ -4,6 +4,7 @@ import visitor.Global;
 import visitor.GlobalType;
 import visitor.YourVisitor;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,26 +31,16 @@ public class GlobalDef {
                 globalDef.isConst = 0x00;
 
                 int len = global.getName().getBytes().length;
-                byte[] item = {0,0,0,0,0,0,0,0};
-                if (len < 8) {
-                    System.arraycopy(global.getName().getBytes(), 0, item, 8 - len, len);
-                } else {
-                    item = global.getName().getBytes();
-                }
+                byte[] item = global.getName().getBytes();
                 globalDef.value = new Array(
-                        new byte[]{0, 0, 0, 1}, item
+                        ByteBuffer.allocate(4).putInt(len).array(), item
                 );
             } else if (global.getType() == GlobalType.STRING) {
                 globalDef.isConst = 0x01;
                 int len = global.getName().getBytes().length;
-                byte[] item = {0,0,0,0,0,0,0,0};
-                if (len < 8) {
-                    System.arraycopy(global.getName().getBytes(), 0, item, 8 - len, len);
-                } else {
-                    item = global.getName().getBytes();
-                }
+                byte[] item = global.getName().getBytes();
                 globalDef.value = new Array(
-                        new byte[]{0, 0, 0, 1}, item
+                        ByteBuffer.allocate(4).putInt(len).array(), item
                 );
             }
             O0.globals.add(globalDef);

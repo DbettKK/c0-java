@@ -32,16 +32,11 @@ public class O0 {
         for (GlobalDef global : globals) {
             out[cnt] = global.isConst;
             cnt++;
+            // 多少条指令
             System.arraycopy(global.value.count, 0, out, cnt, 4);
             cnt += 4;
-            if (global.value.items.length <= 8) {
-                System.arraycopy(global.value.items, 0, out, cnt, 8);
-                cnt += 8;
-            } else {
-                System.arraycopy(global.value.items, 0, out, cnt, global.value.items.length);
-                cnt += global.value.items.length;
-            }
-
+            System.arraycopy(global.value.items, 0, out, cnt, global.value.items.length);
+            cnt += global.value.items.length;
         }
         System.arraycopy(ByteBuffer.allocate(4).putInt(functions.size()).array(), 0, out, cnt, 4);
         cnt += 4;

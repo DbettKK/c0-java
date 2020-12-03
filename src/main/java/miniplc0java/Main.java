@@ -10,6 +10,7 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import visitor.InstructionQueue;
 import visitor.MyVisitor;
 import visitor.YourVisitor;
 import visitor.asm.O0;
@@ -45,5 +46,13 @@ public class Main {
         byte[] out = O0.init();
         stream.write(out);
         stream.close();
+        /*for (String s : YourVisitor.funcTable.keySet()) {
+            System.out.println("FUNC: " + s);
+            InstructionQueue instructions = YourVisitor.funcTable.get(s).getInstructions();
+            while (!instructions.isEmpty()) {
+                System.out.println(instructions.poll());
+            }
+            System.out.println("----------------------------");
+        }*/
     }
 }
