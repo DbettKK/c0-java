@@ -1,6 +1,8 @@
 package visitor;
 
-public class Instruction {
+import java.io.Serializable;
+
+public class Instruction implements Serializable {
     InstructionEnum instruction;
     Object object;
 

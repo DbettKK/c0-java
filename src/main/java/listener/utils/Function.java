@@ -4,12 +4,13 @@ import antlr.scratchParser;
 import visitor.Instruction;
 import visitor.InstructionQueue;
 
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-public class Function {
+public class Function implements Serializable {
     private String funcName;
     private List<FunctionParam> paramList;
     private Map<String, FunctionParam> paramMap;

@@ -5,20 +5,21 @@ import c0.C0Parser;
 import listener.utils.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.io.*;
 import java.util.*;
 
 public class YourVisitor extends C0BaseVisitor<Type> {
     //Queue<Instruction> currentQueue = new ArrayDeque<>();
     //SymbolTable table = new SymbolTable(null, "");
-    InstructionQueue currentQueue;
+    InstructionQueue startQueue;
     SymbolTable currentTable;
     Function currentFunction;
     Map<String, Function> funcTable = new HashMap<>();
     int funcOffset = 0;
     Map<String, Type> returnMap = new HashMap<>();
     boolean isFuncBlock;
-    
-    List<String> global = new ArrayList<>();
+
+    List<Global> global = new ArrayList<>();
 
     @Override
     public Type visitProgram(C0Parser.ProgramContext ctx) {
@@ -28,7 +29,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         Function _start = new Function("_start", new ArrayList<>(), Type.VOID, funcOffset++);
         funcTable.put("_start", _start);
         currentFunction = _start;
-        currentQueue = _start.getInstructions();
+        startQueue = _start.getInstructions();
 
         for (ParseTree child : ctx.children) {
             visit(child);
@@ -54,6 +55,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     @Override
     public Type visitFunction(C0Parser.FunctionContext ctx) {
         String funcName = ctx.IDENT().getText();
+        global.add(new Global(funcName, GlobalType.FUNCTION));
         Type decType = Utils.getType(ctx.ty.getText());
         if (funcTable.get(funcName) != null) {
             throw new RuntimeException("duplicated-func-declare");
@@ -61,13 +63,16 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         Function newFunction = new Function(funcName, new ArrayList<>(), decType, funcOffset++);
 
         funcTable.put(funcName, newFunction);
+        Function tmpFunction = (Function) deepClone(currentFunction);
+        //InstructionQueue tmpQueue = (InstructionQueue) deepClone(currentQueue);
         currentFunction = newFunction;
         // 新建符号表 且将flag置为true
         currentTable = new SymbolTable(currentTable);
-        currentQueue = currentFunction.getInstructions();
         isFuncBlock = true;
         if (ctx.functionParamList() != null) {
             visit(ctx.functionParamList());
+        } else {
+            currentFunction.setParamList(new ArrayList<>());
         }
 
         visit(ctx.blockStmt());
@@ -77,8 +82,10 @@ public class YourVisitor extends C0BaseVisitor<Type> {
                 throw new RuntimeException("return-type-conflict");
             }
             returnMap.put(funcName, Type.VOID);
-            currentQueue.add(new Instruction(InstructionEnum.RET, null));
+            currentFunction.getInstructions().add(new Instruction(InstructionEnum.RET, null));
         }
+        currentFunction = (Function) deepClone(tmpFunction);
+        //currentQueue = (InstructionQueue) deepClone(tmpQueue);
         return Type.VOID;
     }
 
@@ -93,19 +100,18 @@ public class YourVisitor extends C0BaseVisitor<Type> {
             String paramName = param.IDENT().getText();
             Type paramType = Utils.getType(param.ty.getText());
             functionParamList.add(new FunctionParam(isConst, paramName, paramType, paramOffset++));
-            currentTable.put(paramName, new SymbolEntry(isConst, true, false, 
+            currentTable.put(paramName, new SymbolEntry(isConst, true, false,
                     false, currentTable.getOffset(), paramType));
         }
         currentFunction.setParamList(functionParamList);
         return Type.VOID;
     }
 
-
     @Override
     public Type visitCallFunc(C0Parser.CallFuncContext ctx) {
         String callName = ctx.IDENT().getText();
         Function callFunction = funcTable.get(callName);
-        currentQueue.add(new Instruction(InstructionEnum.STACKALLOC,
+        currentFunction.getInstructions().add(new Instruction(InstructionEnum.STACKALLOC,
                 callFunction.getReturnType() == Type.VOID ? 0 : 1));
         List<C0Parser.ExprContext> callParamList = ctx.expr();
         if (callParamList.size() != callFunction.getParamList().size()) {
@@ -119,7 +125,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
             }
 
         }
-        currentQueue.add(new Instruction(InstructionEnum.CALL, callFunction.getOffset()));
+        currentFunction.getInstructions().add(new Instruction(InstructionEnum.CALL, callFunction.getOffset()));
 
         return callFunction.getReturnType();
     }
@@ -127,21 +133,21 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     @Override
     public Type visitIfStmt(C0Parser.IfStmtContext ctx) {
         visit(ctx.expr());
-        currentQueue.add(new Instruction(InstructionEnum.BRTRUE, 1));
-        currentQueue.add(new Instruction(InstructionEnum.BR, 0));
-        int index = currentQueue.getIndex();
+        currentFunction.getInstructions().add(new Instruction(InstructionEnum.BRTRUE, 1));
+        currentFunction.getInstructions().add(new Instruction(InstructionEnum.BR, 0));
+        int index = currentFunction.getInstructions().getIndex();
         visit(ctx.blockStmt());
-        currentQueue.change(index,
-                new Instruction(InstructionEnum.BR, currentQueue.size() - index + 1));
+        currentFunction.getInstructions().change(index,
+                new Instruction(InstructionEnum.BR, currentFunction.getInstructions().size() - index + 1));
         if (ctx.elseStmt() != null) {
-            currentQueue.add(new Instruction(InstructionEnum.BR, 0));
-            index = currentQueue.getIndex();
+            currentFunction.getInstructions().add(new Instruction(InstructionEnum.BR, 0));
+            index = currentFunction.getInstructions().getIndex();
             visit(ctx.elseStmt());
-            currentQueue.change(index,
-                    new Instruction(InstructionEnum.BR, currentQueue.size() - index + 1));
+            currentFunction.getInstructions().change(index,
+                    new Instruction(InstructionEnum.BR, currentFunction.getInstructions().size() - index + 1));
         }
         // 这一步应该是不需要的
-        currentQueue.add(new Instruction(InstructionEnum.BR, 0));
+        currentFunction.getInstructions().add(new Instruction(InstructionEnum.BR, 0));
         return Type.VOID;
     }
 
@@ -156,16 +162,16 @@ public class YourVisitor extends C0BaseVisitor<Type> {
 
     @Override
     public Type visitWhileStmt(C0Parser.WhileStmtContext ctx) {
-        currentQueue.add(new Instruction(InstructionEnum.BR, 0));
-        int indexInit = currentQueue.getIndex();
+        currentFunction.getInstructions().add(new Instruction(InstructionEnum.BR, 0));
+        int indexInit = currentFunction.getInstructions().getIndex();
         visit(ctx.expr());
-        currentQueue.add(new Instruction(InstructionEnum.BRTRUE, 1));
-        currentQueue.add(new Instruction(InstructionEnum.BR, 0));
-        int index = currentQueue.getIndex();
+        currentFunction.getInstructions().add(new Instruction(InstructionEnum.BRTRUE, 1));
+        currentFunction.getInstructions().add(new Instruction(InstructionEnum.BR, 0));
+        int index = currentFunction.getInstructions().getIndex();
         visit(ctx.blockStmt());
-        currentQueue.change(index,
-                new Instruction(InstructionEnum.BR, currentQueue.size() - index + 1));
-        currentQueue.add(new Instruction(InstructionEnum.BR, indexInit - currentQueue.size() - 1));
+        currentFunction.getInstructions().change(index,
+                new Instruction(InstructionEnum.BR, currentFunction.getInstructions().size() - index + 1));
+        currentFunction.getInstructions().add(new Instruction(InstructionEnum.BR, indexInit - currentFunction.getInstructions().size() - 1));
         return Type.VOID;
     }
 
@@ -180,6 +186,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         for (C0Parser.StmtContext statement : statements) {
             visit(statement);
         }
+        currentTable = currentTable.getPrevTable();
         return Type.VOID;
     }
 
@@ -232,7 +239,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
             currentTable.put(ident, entry);
             currentQueue.add(new Instruction(InstructionEnum.STORE64, null));
         }
-        if (isGlobal) global.add(ident);
+        if (isGlobal) global.add(new Global(ident, GlobalType.VAR));
         return Type.VOID;
     }
 
@@ -261,7 +268,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         if (!isGlobal) entry.setLocalVarOffset(localVarOffset);
         currentTable.put(ident, entry);
         currentQueue.add(new Instruction(InstructionEnum.STORE64, null));
-        if (isGlobal) global.add(ident);
+        if (isGlobal) global.add(new Global(ident, GlobalType.CONST));
         return Type.VOID;
     }
 
@@ -339,7 +346,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         }
         return exprSymbolExpr(left, symbol, right);
     }
-    
+
     @Override
     public Type visitIdent(C0Parser.IdentContext ctx) {
         String ident = ctx.IDENT().getText();
@@ -462,6 +469,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     }
 
     public void identSpecify(String ident, SymbolEntry entry) {
+        //System.out.println(currentFunction.getFuncName());
         if (entry.isGlobal()) {
             currentQueue.add(new Instruction(InstructionEnum.GLOBA, entry.getStackOffset()));
             currentQueue.add(new Instruction(InstructionEnum.LOAD64, null));
@@ -503,24 +511,39 @@ public class YourVisitor extends C0BaseVisitor<Type> {
 
     @Override
     public Type visitPutInt(C0Parser.PutIntContext ctx) {
+        Type type = visit(ctx.expr());
+        if (type != Type.INT) {
+            throw new RuntimeException("putInt-error");
+        }
         currentQueue.add(new Instruction(InstructionEnum.PRINTI, null));
         return Type.VOID;
     }
 
     @Override
     public Type visitPutDouble(C0Parser.PutDoubleContext ctx) {
+        Type type = visit(ctx.expr());
+        if (type != Type.DOUBLE) {
+            throw new RuntimeException("putDouble-error");
+        }
         currentQueue.add(new Instruction(InstructionEnum.PRINTF, null));
         return Type.VOID;
     }
 
     @Override
     public Type visitPutChar(C0Parser.PutCharContext ctx) {
+        Type type = visit(ctx.expr());
+        if (type != Type.INT) {
+            throw new RuntimeException("putChar-error");
+        }
         currentQueue.add(new Instruction(InstructionEnum.PRINTC, null));
         return Type.VOID;
     }
 
     @Override
     public Type visitPutStr(C0Parser.PutStrContext ctx) {
+        String str = ctx.str().getText();
+        global.add(new Global(str, GlobalType.STRING));
+        currentQueue.add(new Instruction(InstructionEnum.PUSH, global.size() - 1));
         currentQueue.add(new Instruction(InstructionEnum.PRINTS, null));
         return Type.VOID;
     }
@@ -529,5 +552,24 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     public Type visitPutLn(C0Parser.PutLnContext ctx) {
         currentQueue.add(new Instruction(InstructionEnum.PRINTLN, null));
         return Type.VOID;
+    }
+
+    public Object deepClone(Object f) {
+        //将对象写入流中
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+            objectOutputStream.writeObject(f);
+            //从流中取出
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+            return objectInputStream.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("error");
+            return null;
+        }
+
+
     }
 }

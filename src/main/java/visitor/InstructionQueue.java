@@ -1,11 +1,12 @@
 package visitor;
 
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Queue;
 import java.util.Stack;
 
-public class InstructionQueue {
+public class InstructionQueue implements Serializable {
     private Deque<Instruction> instructions;
     private int index = 0;
 
