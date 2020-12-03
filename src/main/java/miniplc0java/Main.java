@@ -24,8 +24,8 @@ public class Main {
         }
     }
     public static void main(String[] args) throws IOException, RecognitionException {
-        //File file = new File(args[0]);
-        File file = new File("D:/c.c0");
+        File file = new File(args[0]);
+        //File file = new File("D:/c.c0");
         InputStream in = new FileInputStream(file);
         //InputStream in = System.in;
         ANTLRInputStream input = new ANTLRInputStream(in);
@@ -34,7 +34,7 @@ public class Main {
         //lex.addErrorListener(new MyErrorListener());
         C0Parser parser = new C0Parser(tokens);
         parser.addErrorListener(new MyErrorListener());
-        //getData(file);
+        getData(file);
         C0Parser.ProgramContext tree = parser.program();
         //ParseTreeWalker walker = new ParseTreeWalker();
         //walker.walk(new MyParserListener(), tree);
