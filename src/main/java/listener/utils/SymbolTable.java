@@ -25,6 +25,11 @@ public class SymbolTable {
         this.funcName = funcName;
     }
 
+    public SymbolTable(SymbolTable p) {
+        table = new HashMap<>();
+        prevTable = p;
+    }
+
     public void put(String s, SymbolEntry id) {
         offset++;
         table.put(s, id);

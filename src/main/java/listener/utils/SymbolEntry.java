@@ -7,6 +7,8 @@ public class SymbolEntry implements ParamAndLocal {
     private boolean isGlobal;
     private boolean isLocal;
 
+    private int localVarOffset = -1;
+
     private int stackOffset;
 
 
@@ -129,6 +131,14 @@ public class SymbolEntry implements ParamAndLocal {
 
     public void setType(Type type) {
         this.type = type;
+    }
+
+    public int getLocalVarOffset() {
+        return localVarOffset;
+    }
+
+    public void setLocalVarOffset(int localVarOffset) {
+        this.localVarOffset = localVarOffset;
     }
 
     @Override

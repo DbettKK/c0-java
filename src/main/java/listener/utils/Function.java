@@ -1,15 +1,33 @@
 package listener.utils;
 
 import antlr.scratchParser;
+import visitor.Instruction;
+import visitor.InstructionQueue;
 
+import java.util.ArrayDeque;
+import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 public class Function {
     private String funcName;
+    private List<FunctionParam> paramList;
     private Map<String, FunctionParam> paramMap;
     private Type returnType;
     private int offset;
+
+    private int localVarOffset = 0;
+
+    private final InstructionQueue instructions = new InstructionQueue();
+
     private Object returnValue;
+
+    public Function(String funcName, List<FunctionParam> paramList, Type returnType, int offset) {
+        this.funcName = funcName;
+        this.paramList = paramList;
+        this.returnType = returnType;
+        this.offset = offset;
+    }
 
     public Function(String funcName, Map<String, FunctionParam> paramMap, Type returnType, int offset) {
         this.funcName = funcName;
@@ -24,6 +42,18 @@ public class Function {
         this.returnType = returnType;
         this.offset = offset;
         this.returnValue = returValue;
+    }
+
+    public InstructionQueue getInstructions() {
+        return instructions;
+    }
+
+    public List<FunctionParam> getParamList() {
+        return paramList;
+    }
+
+    public void setParamList(List<FunctionParam> paramList) {
+        this.paramList = paramList;
     }
 
     public String getFuncName() {
@@ -66,14 +96,22 @@ public class Function {
         this.returnValue = returValue;
     }
 
+    public int getLocalVarOffset() {
+        return localVarOffset;
+    }
+
+    public void setLocalVarOffset(int localVarOffset) {
+        this.localVarOffset = localVarOffset;
+    }
+
     @Override
     public String toString() {
         return "Function{" +
                 "funcName='" + funcName + '\'' +
-                ", paramMap=" + paramMap +
+                ", paramList=" + paramList +
                 ", returnType=" + returnType +
                 ", offset=" + offset +
-                ", returnValue=" + returnValue +
+                ", instructions=" + instructions +
                 '}';
     }
 
