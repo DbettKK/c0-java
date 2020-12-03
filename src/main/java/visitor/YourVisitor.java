@@ -156,7 +156,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
                     new Instruction(InstructionEnum.BR, currentQueue.size() - index + 1));
         }
         // 这一步应该是不需要的
-        currentQueue.add(new Instruction(InstructionEnum.BR, 0));
+        //currentQueue.add(new Instruction(InstructionEnum.BR, 0));
         return Type.VOID;
     }
 
@@ -193,6 +193,11 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         }
         List<C0Parser.StmtContext> statements = ctx.stmt();
         for (C0Parser.StmtContext statement : statements) {
+            if (statement.breakStmt() != null) {
+
+            } else if (statement.continueStmt() != null) {
+
+            }
             visit(statement);
         }
         currentTable = currentTable.getPrevTable();
