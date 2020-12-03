@@ -28,17 +28,26 @@ public class GlobalDef {
                 );
             } else if (global.getType() == GlobalType.FUNCTION) {
                 globalDef.isConst = 0x00;
-                byte[] item = {0,0,0,0,0,0,0,0};
+
                 int len = global.getName().getBytes().length;
-                System.arraycopy(global.getName().getBytes(), 0, item, 8 - len, len);
+                byte[] item = {0,0,0,0,0,0,0,0};
+                if (len < 8) {
+                    System.arraycopy(global.getName().getBytes(), 0, item, 8 - len, len);
+                } else {
+                    item = global.getName().getBytes();
+                }
                 globalDef.value = new Array(
                         new byte[]{0, 0, 0, 1}, item
                 );
             } else if (global.getType() == GlobalType.STRING) {
                 globalDef.isConst = 0x01;
-                byte[] item = {0,0,0,0,0,0,0,0};
                 int len = global.getName().getBytes().length;
-                System.arraycopy(global.getName().getBytes(), 0, item, 8 - len, len);
+                byte[] item = {0,0,0,0,0,0,0,0};
+                if (len < 8) {
+                    System.arraycopy(global.getName().getBytes(), 0, item, 8 - len, len);
+                } else {
+                    item = global.getName().getBytes();
+                }
                 globalDef.value = new Array(
                         new byte[]{0, 0, 0, 1}, item
                 );
