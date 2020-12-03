@@ -538,7 +538,12 @@ public class YourVisitor extends C0BaseVisitor<Type> {
             int value = ctx.CharLiteral().getText().charAt(0);
             currentQueue.add(new Instruction(InstructionEnum.PUSH, value));
         } else if (ctx.UINT() != null) {
-            int value = Integer.parseInt(ctx.UINT().getText());
+            int value;
+            try {
+                value = Integer.parseInt(ctx.UINT().getText());
+            } catch (Exception e) {
+                value = ctx.UINT().getText().charAt(0);
+            }
             currentQueue.add(new Instruction(InstructionEnum.PUSH, value));
         } else  {
             Type type = visit(ctx.expr());
