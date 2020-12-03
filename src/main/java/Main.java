@@ -19,7 +19,7 @@ public class Main {
     }
     public static void main(String[] args) throws IOException, RecognitionException {
         File file = new File(args[0]);
-        FileOutputStream stream = new FileOutputStream(new File(args[2]));
+        FileOutputStream stream = new FileOutputStream(new File(args[1]));
         //File file = new File("D:/c.c0");
         InputStream in = new FileInputStream(file);
         //InputStream in = System.in;
