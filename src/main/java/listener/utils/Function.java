@@ -23,6 +23,7 @@ public class Function implements Serializable {
 
     private Object returnValue;
 
+
     public Function(String funcName, List<FunctionParam> paramList, Type returnType, int offset) {
         this.funcName = funcName;
         this.paramList = paramList;

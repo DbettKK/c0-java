@@ -11,7 +11,7 @@ import java.util.*;
 public class YourVisitor extends C0BaseVisitor<Type> {
     //Queue<Instruction> currentQueue = new ArrayDeque<>();
     //SymbolTable table = new SymbolTable(null, "");
-    InstructionQueue startQueue;
+    InstructionQueue currentQueue;
     SymbolTable currentTable;
     Function currentFunction;
     Map<String, Function> funcTable = new HashMap<>();
@@ -29,7 +29,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         Function _start = new Function("_start", new ArrayList<>(), Type.VOID, funcOffset++);
         funcTable.put("_start", _start);
         currentFunction = _start;
-        startQueue = _start.getInstructions();
+        currentQueue = _start.getInstructions();
 
         for (ParseTree child : ctx.children) {
             visit(child);
@@ -63,11 +63,13 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         Function newFunction = new Function(funcName, new ArrayList<>(), decType, funcOffset++);
 
         funcTable.put(funcName, newFunction);
-        Function tmpFunction = (Function) deepClone(currentFunction);
+
         //InstructionQueue tmpQueue = (InstructionQueue) deepClone(currentQueue);
+        String tmp = currentFunction.getFuncName();
         currentFunction = newFunction;
         // 新建符号表 且将flag置为true
         currentTable = new SymbolTable(currentTable);
+        currentQueue = currentFunction.getInstructions();
         isFuncBlock = true;
         if (ctx.functionParamList() != null) {
             visit(ctx.functionParamList());
@@ -82,10 +84,11 @@ public class YourVisitor extends C0BaseVisitor<Type> {
                 throw new RuntimeException("return-type-conflict");
             }
             returnMap.put(funcName, Type.VOID);
-            currentFunction.getInstructions().add(new Instruction(InstructionEnum.RET, null));
+            currentQueue.add(new Instruction(InstructionEnum.RET, null));
         }
-        currentFunction = (Function) deepClone(tmpFunction);
-        //currentQueue = (InstructionQueue) deepClone(tmpQueue);
+        currentFunction = funcTable.get(tmp);
+        currentQueue = currentFunction.getInstructions();
+        //funcTable.get("_start").setInstructions(currentQueue);
         return Type.VOID;
     }
 
@@ -111,7 +114,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     public Type visitCallFunc(C0Parser.CallFuncContext ctx) {
         String callName = ctx.IDENT().getText();
         Function callFunction = funcTable.get(callName);
-        currentFunction.getInstructions().add(new Instruction(InstructionEnum.STACKALLOC,
+        currentQueue.add(new Instruction(InstructionEnum.STACKALLOC,
                 callFunction.getReturnType() == Type.VOID ? 0 : 1));
         List<C0Parser.ExprContext> callParamList = ctx.expr();
         if (callParamList.size() != callFunction.getParamList().size()) {
@@ -125,7 +128,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
             }
 
         }
-        currentFunction.getInstructions().add(new Instruction(InstructionEnum.CALL, callFunction.getOffset()));
+        currentQueue.add(new Instruction(InstructionEnum.CALL, callFunction.getOffset()));
 
         return callFunction.getReturnType();
     }
@@ -133,21 +136,21 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     @Override
     public Type visitIfStmt(C0Parser.IfStmtContext ctx) {
         visit(ctx.expr());
-        currentFunction.getInstructions().add(new Instruction(InstructionEnum.BRTRUE, 1));
-        currentFunction.getInstructions().add(new Instruction(InstructionEnum.BR, 0));
-        int index = currentFunction.getInstructions().getIndex();
+        currentQueue.add(new Instruction(InstructionEnum.BRTRUE, 1));
+        currentQueue.add(new Instruction(InstructionEnum.BR, 0));
+        int index = currentQueue.getIndex();
         visit(ctx.blockStmt());
-        currentFunction.getInstructions().change(index,
-                new Instruction(InstructionEnum.BR, currentFunction.getInstructions().size() - index + 1));
+        currentQueue.change(index,
+                new Instruction(InstructionEnum.BR, currentQueue.size() - index + 1));
         if (ctx.elseStmt() != null) {
-            currentFunction.getInstructions().add(new Instruction(InstructionEnum.BR, 0));
-            index = currentFunction.getInstructions().getIndex();
+            currentQueue.add(new Instruction(InstructionEnum.BR, 0));
+            index = currentQueue.getIndex();
             visit(ctx.elseStmt());
-            currentFunction.getInstructions().change(index,
-                    new Instruction(InstructionEnum.BR, currentFunction.getInstructions().size() - index + 1));
+            currentQueue.change(index,
+                    new Instruction(InstructionEnum.BR, currentQueue.size() - index + 1));
         }
         // 这一步应该是不需要的
-        currentFunction.getInstructions().add(new Instruction(InstructionEnum.BR, 0));
+        currentQueue.add(new Instruction(InstructionEnum.BR, 0));
         return Type.VOID;
     }
 
@@ -162,16 +165,16 @@ public class YourVisitor extends C0BaseVisitor<Type> {
 
     @Override
     public Type visitWhileStmt(C0Parser.WhileStmtContext ctx) {
-        currentFunction.getInstructions().add(new Instruction(InstructionEnum.BR, 0));
-        int indexInit = currentFunction.getInstructions().getIndex();
+        currentQueue.add(new Instruction(InstructionEnum.BR, 0));
+        int indexInit = currentQueue.getIndex();
         visit(ctx.expr());
-        currentFunction.getInstructions().add(new Instruction(InstructionEnum.BRTRUE, 1));
-        currentFunction.getInstructions().add(new Instruction(InstructionEnum.BR, 0));
-        int index = currentFunction.getInstructions().getIndex();
+        currentQueue.add(new Instruction(InstructionEnum.BRTRUE, 1));
+        currentQueue.add(new Instruction(InstructionEnum.BR, 0));
+        int index = currentQueue.getIndex();
         visit(ctx.blockStmt());
-        currentFunction.getInstructions().change(index,
-                new Instruction(InstructionEnum.BR, currentFunction.getInstructions().size() - index + 1));
-        currentFunction.getInstructions().add(new Instruction(InstructionEnum.BR, indexInit - currentFunction.getInstructions().size() - 1));
+        currentQueue.change(index,
+                new Instruction(InstructionEnum.BR, currentQueue.size() - index + 1));
+        currentQueue.add(new Instruction(InstructionEnum.BR, indexInit - currentQueue.size() - 1));
         return Type.VOID;
     }
 
