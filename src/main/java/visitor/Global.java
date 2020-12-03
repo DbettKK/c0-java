@@ -1,12 +1,50 @@
 package visitor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Global {
+//    public static List<Global> funcGlobal = new ArrayList<>();
+//    public static List<Global> varGlobal = new ArrayList<>();
+//    public static List<Global> constGlobal = new ArrayList<>();
+//    public static List<Global> strGlobal = new ArrayList<>();
     private String name;
     private GlobalType type;
+    private String value;
+
+//    public void add(Global global) {
+//        switch (global.getType()) {
+//            case FUNCTION:
+//                funcGlobal.add(global); break;
+//            case VAR:
+//                varGlobal.add(global); break;
+//            case CONST:
+//                constGlobal.add(global); break;
+//            case STRING:
+//                strGlobal.add(global); break;
+//        }
+//    }
+//
+//    public int size() {
+//        return funcGlobal.size() + varGlobal.size() + constGlobal.size() + strGlobal.size();
+//    }
+//
+//    public int strSize() {
+//        return varGlobal.size() + constGlobal.size() + strGlobal.size();
+//    }
+//
+//    public Global() {
+//    }
 
     public Global(String name, GlobalType type) {
         this.name = name;
         this.type = type;
+    }
+
+    public Global(String name, GlobalType type, String value) {
+        this.name = name;
+        this.type = type;
+        this.value = value;
     }
 
     public String getName() {
@@ -25,6 +63,14 @@ public class Global {
         this.type = type;
     }
 
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
     @Override
     public String toString() {
         return "Global{" +
@@ -34,6 +80,4 @@ public class Global {
     }
 }
 
-enum GlobalType {
-    FUNCTION, VAR, CONST, STRING
-}
+

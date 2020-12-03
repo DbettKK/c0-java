@@ -14,16 +14,17 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     InstructionQueue currentQueue;
     SymbolTable currentTable;
     Function currentFunction;
-    Map<String, Function> funcTable = new HashMap<>();
+    public static Map<String, Function> funcTable = new HashMap<>();
     int funcOffset = 0;
     Map<String, Type> returnMap = new HashMap<>();
     boolean isFuncBlock;
 
-    List<Global> global = new ArrayList<>();
+    public static List<Global> global = new ArrayList<>();
 
     @Override
     public Type visitProgram(C0Parser.ProgramContext ctx) {
         // 新建总符号表
+        global.add(new Global("_start", GlobalType.FUNCTION));
         currentTable = new SymbolTable(null);
         // 新建_start函数
         Function _start = new Function("_start", new ArrayList<>(), Type.VOID, funcOffset++);
@@ -41,14 +42,14 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         startQueue.add(new Instruction(InstructionEnum.STACKALLOC, v));
         startQueue.add(new Instruction(InstructionEnum.CALL, main.getOffset()));
 
-        for (String s : funcTable.keySet()) {
+        /*for (String s : funcTable.keySet()) {
             System.out.println("FUNC: " + s);
             InstructionQueue instructions = funcTable.get(s).getInstructions();
             while (!instructions.isEmpty()) {
                 System.out.println(instructions.poll());
             }
             System.out.println("----------------------------");
-        }
+        }*/
         return Type.VOID;
     }
 
@@ -214,11 +215,14 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         int localVarOffset = 0;
         String ident = ctx.IDENT().getText();
         if (isGlobal) {
-            funcTable.get("_start").getInstructions()
+            if (ctx.ASSIGN() != null) {
+                funcTable.get("_start").getInstructions()
                     .add(new Instruction(InstructionEnum.GLOBA, currentTable.getOffset()));
+            }
         } else {
             localVarOffset = currentFunction.getLocalVarOffset();
             currentFunction.setLocalVarOffset(localVarOffset + 1);
+            currentFunction.setLocSlot(currentFunction.getLocSlot() + 1);
             if (ctx.ASSIGN() != null) {
                 currentQueue.add(new Instruction(InstructionEnum.LOCA, localVarOffset));
             }
@@ -257,6 +261,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         } else {
             localVarOffset = currentFunction.getLocalVarOffset();
             currentFunction.setLocalVarOffset(localVarOffset + 1);
+            currentFunction.setLocSlot(currentFunction.getLocSlot() + 1);
             currentQueue.add(new Instruction(InstructionEnum.LOCA, localVarOffset));
         }
         if (currentTable.getCurTable(ident) != null) {

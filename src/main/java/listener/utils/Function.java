@@ -21,6 +21,8 @@ public class Function implements Serializable {
 
     private final InstructionQueue instructions = new InstructionQueue();
 
+    private int locSlot = 0;
+
     private Object returnValue;
 
 
@@ -104,6 +106,14 @@ public class Function implements Serializable {
 
     public void setLocalVarOffset(int localVarOffset) {
         this.localVarOffset = localVarOffset;
+    }
+
+    public int getLocSlot() {
+        return locSlot;
+    }
+
+    public void setLocSlot(int locSlot) {
+        this.locSlot = locSlot;
     }
 
     @Override

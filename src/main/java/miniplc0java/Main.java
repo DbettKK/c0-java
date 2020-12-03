@@ -12,6 +12,7 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import visitor.MyVisitor;
 import visitor.YourVisitor;
+import visitor.asm.O0;
 
 import java.io.*;
 
@@ -25,6 +26,7 @@ public class Main {
     }
     public static void main(String[] args) throws IOException, RecognitionException {
         //File file = new File(args[0]);
+        FileOutputStream stream = new FileOutputStream(new File("D:/asm.O0"));
         File file = new File("D:/c.c0");
         InputStream in = new FileInputStream(file);
         //InputStream in = System.in;
@@ -40,5 +42,8 @@ public class Main {
         //walker.walk(new MyParserListener(), tree);
         YourVisitor visitor = new YourVisitor();
         visitor.visit(tree);
+        byte[] out = O0.init();
+        stream.write(out);
+        stream.close();
     }
 }
