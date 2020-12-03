@@ -68,7 +68,9 @@ public class O0 {
                 }
             }
         }
-        return out;
+        byte[] bytes = new byte[cnt];
+        System.arraycopy(out, 0, bytes, 0, cnt);
+        return bytes;
     }
 
 }

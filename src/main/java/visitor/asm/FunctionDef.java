@@ -58,8 +58,14 @@ public class FunctionDef {
                                 ByteBuffer.allocate(4).putInt((Integer) poll.getObject()).array()));
                     }
                     else {
-                        instruction.add(new InstructionAsm(Asm.byteMap.get(ins),
-                                fourBytesToEight(ByteBuffer.allocate(4).putInt((Integer) poll.getObject()).array()), true));
+                        if (poll.getObject() instanceof Long) {
+                            instruction.add(new InstructionAsm(Asm.byteMap.get(ins),
+                                    ByteBuffer.allocate(8).putLong(0, (long)poll.getObject()).array(), true));
+                        } else {
+                            instruction.add(new InstructionAsm(Asm.byteMap.get(ins),
+                                    fourBytesToEight(ByteBuffer.allocate(4).putInt((Integer) poll.getObject()).array()), true));
+                        }
+
                     }
                 }
 
