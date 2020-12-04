@@ -651,8 +651,8 @@ public class YourVisitor extends C0BaseVisitor<Type> {
 
     @Override
     public Type visitPutChar(C0Parser.PutCharContext ctx) {
-        if (ctx.CharLiteral() != null) {
-            int value = ctx.CharLiteral().getText().charAt(0);
+        if (ctx.Char() != null) {
+            int value = ctx.Char().getText().charAt(0);
             currentQueue.add(new Instruction(InstructionEnum.PUSH, value));
         } else if (ctx.UINT() != null) {
             int value;
@@ -675,6 +675,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     @Override
     public Type visitPutStr(C0Parser.PutStrContext ctx) {
         String str = ctx.str().getText();
+        System.out.println(str);
         global.add(new Global(StringEscapeUtils.unescapeJava(str), GlobalType.STRING));
         currentQueue.add(new Instruction(InstructionEnum.PUSH, global.size() - 1));
         currentQueue.add(new Instruction(InstructionEnum.PRINTS, null));

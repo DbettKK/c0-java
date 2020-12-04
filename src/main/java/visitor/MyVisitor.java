@@ -458,8 +458,8 @@ public class MyVisitor extends C0BaseVisitor<Expression> {
     @Override
     public Expression visitPutChar(C0Parser.PutCharContext ctx) {
         Expression e;
-        if (ctx.CharLiteral() != null) {
-            int value = ctx.CharLiteral().getText().charAt(0);
+        if (ctx.Char() != null) {
+            int value = ctx.Char().getText().charAt(0);
             e = new Expression(value, Type.INT);
         } else if (ctx.UINT() != null) {
             int value = Integer.parseInt(ctx.UINT().getText());
