@@ -56,9 +56,10 @@ public class FunctionDef {
             InstructionQueue instructions = function.getInstructions();
             List<InstructionAsm> instructionList = new ArrayList<>();
             System.out.println(funcName);
+            int cnt=0;
             while (!instructions.isEmpty()) {
                 Instruction poll = instructions.poll();
-                System.out.println(poll);
+                System.out.println(cnt++ + ": " + poll);
                 String ins = poll.getInstruction().toString().toLowerCase();
                 if (poll.getObject() == null) {
                     instructionList.add(new InstructionAsm(Asm.byteMap.get(ins)));
@@ -90,6 +91,7 @@ public class FunctionDef {
     public static int getIndex(String funcName) {
         for (int i = 0; i < YourVisitor.global.size(); i++) {
             if (YourVisitor.global.get(i).getName().equals(funcName)) {
+                System.out.println(funcName + ":" + i);
                 return i;
             }
         }

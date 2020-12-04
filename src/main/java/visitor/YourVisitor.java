@@ -4,6 +4,7 @@ import c0.C0BaseVisitor;
 import c0.C0Parser;
 import listener.utils.*;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import java.io.*;
 import java.util.*;
@@ -49,6 +50,24 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         int v = main.getReturnType() == Type.VOID ? 0 : 1;
         startQueue.add(new Instruction(InstructionEnum.STACKALLOC, v));
         startQueue.add(new Instruction(InstructionEnum.CALL, main.getOffset()));
+
+        List<Global> newGlobal = new ArrayList<>();
+        for (Global g : global) {
+            if (g.getType() == GlobalType.VAR || g.getType() == GlobalType.CONST) {
+                newGlobal.add(g);
+            }
+        }
+        for (Global g : global) {
+            if (g.getType() == GlobalType.FUNCTION) {
+                newGlobal.add(g);
+            }
+        }
+        for (Global g : global) {
+            if (g.getType() == GlobalType.STRING) {
+                newGlobal.add(g);
+            }
+        }
+        global = newGlobal;
 
         /*for (String s : funcTable.keySet()) {
             System.out.println("FUNC: " + s);
@@ -656,7 +675,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     @Override
     public Type visitPutStr(C0Parser.PutStrContext ctx) {
         String str = ctx.str().getText();
-        global.add(new Global(str, GlobalType.STRING));
+        global.add(new Global(StringEscapeUtils.unescapeJava(str), GlobalType.STRING));
         currentQueue.add(new Instruction(InstructionEnum.PUSH, global.size() - 1));
         currentQueue.add(new Instruction(InstructionEnum.PRINTS, null));
         return Type.VOID;
