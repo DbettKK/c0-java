@@ -32,9 +32,8 @@ public class FunctionDef {
         }
 
         for (Function function : functionList) {
-
             String funcName = function.getFuncName();
-            int loc = getIndex(funcName);
+            int loc = YourVisitor.global.get(getIndex(funcName)).getOffset();
             byte[] nameLocation = ByteBuffer.allocate(4).putInt(loc).array();
             byte[] returnSlots;
             if (function.getReturnType() == Type.VOID) {
@@ -91,7 +90,7 @@ public class FunctionDef {
     public static int getIndex(String funcName) {
         for (int i = 0; i < YourVisitor.global.size(); i++) {
             if (YourVisitor.global.get(i).getName().equals(funcName)) {
-                System.out.println(funcName + ":" + i);
+                //System.out.println(funcName + ":" + i);
                 return i;
             }
         }

@@ -29,8 +29,6 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     int globalOffset = 0;
     boolean isVoid = false;
 
-
-
     int currentWhile = 0;
     Map<Integer, Integer> whileBreakMap = new HashMap<>();
     Map<Integer, Integer> whileContMap = new HashMap<>();
@@ -54,8 +52,9 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         Function main = funcTable.get("main");
         int v = main.getReturnType() == Type.VOID ? 0 : 1;
         startQueue.add(new Instruction(InstructionEnum.STACKALLOC, v));
-        startQueue.add(new Instruction(InstructionEnum.CALL, main.getOffset()));
-
+        startQueue.add(new Instruction(InstructionEnum.CALL,
+                global.get(getGlobalIndex("main")).getOffset()));
+        System.out.println(global);
         List<Global> newGlobal = new ArrayList<>();
         for (Global g : global) {
             if (g.getType() == GlobalType.VAR || g.getType() == GlobalType.CONST) {
@@ -72,7 +71,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
                 newGlobal.add(g);
             }
         }
-        global = newGlobal;
+        //global = newGlobal;
         /*for (String s : funcTable.keySet()) {
             System.out.println("FUNC: " + s);
             InstructionQueue instructions = funcTable.get(s).getInstructions();
@@ -88,7 +87,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     public Type visitFunction(C0Parser.FunctionContext ctx) {
         isVoid = false;
         String funcName = ctx.IDENT().getText();
-        global.add(new Global(funcName, GlobalType.FUNCTION));
+        global.add(new Global(funcName, GlobalType.FUNCTION, globalOffset++));
         Type decType = Utils.getType(ctx.ty.getText());
         if (funcTable.get(funcName) != null) {
             throw new RuntimeException("duplicated-func-declare");
@@ -179,7 +178,8 @@ public class YourVisitor extends C0BaseVisitor<Type> {
             }
 
         }
-        currentQueue.add(new Instruction(InstructionEnum.CALL, callFunction.getOffset()));
+        currentQueue.add(new Instruction(InstructionEnum.CALL,
+                global.get(getGlobalIndex(callName)).getOffset()));
 
         return callFunction.getReturnType();
     }
@@ -322,9 +322,11 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         int localVarOffset = 0;
         String ident = ctx.IDENT().getText();
         if (isGlobal) {
+            global.add(new Global(ident, GlobalType.VAR, globalOffset++));
             if (ctx.ASSIGN() != null) {
                 funcTable.get("_start").getInstructions()
-                    .add(new Instruction(InstructionEnum.GLOBA, currentTable.getOffset()));
+                    .add(new Instruction(InstructionEnum.GLOBA,
+                            global.get(getGlobalIndex(ident)).getOffset()));
             }
         } else {
             localVarOffset = currentFunction.getLocalVarOffset();
@@ -353,7 +355,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
             currentTable.put(ident, entry);
             currentQueue.add(new Instruction(InstructionEnum.STORE64, null));
         }
-        if (isGlobal) global.add(new Global(ident, GlobalType.VAR));
+
         return Type.VOID;
     }
 
@@ -363,8 +365,10 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         String ident = ctx.IDENT().getText();
         int localVarOffset = 0;
         if (isGlobal) {
+            global.add(new Global(ident, GlobalType.CONST, globalOffset++));
             funcTable.get("_start").getInstructions()
-                    .add(new Instruction(InstructionEnum.GLOBA, currentTable.getOffset()));
+                    .add(new Instruction(InstructionEnum.GLOBA,
+                            global.get(getGlobalIndex(ident)).getOffset()));
         } else {
             localVarOffset = currentFunction.getLocalVarOffset();
             currentFunction.setLocalVarOffset(localVarOffset + 1);
@@ -383,7 +387,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         if (!isGlobal) entry.setLocalVarOffset(localVarOffset);
         currentTable.put(ident, entry);
         currentQueue.add(new Instruction(InstructionEnum.STORE64, null));
-        if (isGlobal) global.add(new Global(ident, GlobalType.CONST));
+
         return Type.VOID;
     }
 
@@ -596,7 +600,8 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     public void identSpecify(String ident, SymbolEntry entry) {
         //System.out.println(currentFunction.getFuncName());
         if (entry.isGlobal()) {
-            currentQueue.add(new Instruction(InstructionEnum.GLOBA, entry.getStackOffset()));
+            currentQueue.add(new Instruction(InstructionEnum.GLOBA,
+                    global.get(getGlobalIndex(ident)).getOffset()));
             currentQueue.add(new Instruction(InstructionEnum.LOAD64, null));
         } else if (entry.isLocal()) {
             currentQueue.add(new Instruction(InstructionEnum.LOCA,
@@ -620,7 +625,8 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     public void identLeftSpecify(String ident, SymbolEntry entry) {
         //System.out.println(currentFunction.getFuncName());
         if (entry.isGlobal()) {
-            currentQueue.add(new Instruction(InstructionEnum.GLOBA, entry.getStackOffset()));
+            currentQueue.add(new Instruction(InstructionEnum.GLOBA,
+                    global.get(getGlobalIndex(ident)).getOffset()));
             //currentQueue.add(new Instruction(InstructionEnum.LOAD64, null));
         } else if (entry.isLocal()) {
             currentQueue.add(new Instruction(InstructionEnum.LOCA,
@@ -706,8 +712,8 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     public Type visitPutStr(C0Parser.PutStrContext ctx) {
         String str = ctx.str().getText();
         //System.out.println(str);
-        global.add(new Global(StringEscapeUtils.unescapeJava(str), GlobalType.STRING));
-        currentQueue.add(new Instruction(InstructionEnum.PUSH, global.size() - 1));
+        global.add(new Global(StringEscapeUtils.unescapeJava(str), GlobalType.STRING, globalOffset++));
+        currentQueue.add(new Instruction(InstructionEnum.PUSH, globalOffset - 1));
         currentQueue.add(new Instruction(InstructionEnum.PRINTS, null));
         return Type.VOID;
     }
@@ -742,6 +748,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
                 return i;
             }
         }
+        System.out.println(name);
         throw new RuntimeException("");
     }
 }

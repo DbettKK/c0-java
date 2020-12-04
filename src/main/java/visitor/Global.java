@@ -11,7 +11,7 @@ public class Global {
     private String name;
     private GlobalType type;
     private String value;
-    private int offset = 0;
+    private int offset;
 
 //    public void add(Global global) {
 //        switch (global.getType()) {
@@ -91,6 +91,7 @@ public class Global {
         return "Global{" +
                 "name='" + name + '\'' +
                 ", type=" + type +
+                ", offset=" + offset +
                 '}';
     }
 }
