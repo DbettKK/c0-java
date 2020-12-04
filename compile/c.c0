@@ -18,15 +18,5 @@ fn fastpow(base: int, exp: int) -> int {
 }
 
 fn main() -> void {
-    let base: int;
-    let exp: int;
-    let count: int;
-    count = getint();
-    while count > 0 {
-        base = getint();
-        exp = getint();
-        putint(fastpow(base,exp));
-        putln();
-        count = count - 1;
-    }
+    putchar('-');
 }

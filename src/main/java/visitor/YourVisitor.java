@@ -673,7 +673,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     @Override
     public Type visitPutChar(C0Parser.PutCharContext ctx) {
         if (ctx.Char() != null) {
-            int value = ctx.Char().getText().charAt(0);
+            int value = ctx.Char().getText().charAt(1);
             currentQueue.add(new Instruction(InstructionEnum.PUSH, value));
         } else if (ctx.UINT() != null) {
             int value;
