@@ -24,10 +24,18 @@ public class FunctionDef {
     byte[] intSize;
 
     public static void getFunc() {
+        //int label = 0;
+        Function[] functionList = new Function[YourVisitor.funcTable.keySet().size()];
         for (String funcName : YourVisitor.funcTable.keySet()) {
+            Function function =  YourVisitor.funcTable.get(funcName);
+            functionList[function.getOffset()] = function;
+        }
+
+        for (Function function : functionList) {
+
+            String funcName = function.getFuncName();
             int loc = getIndex(funcName);
             byte[] nameLocation = ByteBuffer.allocate(4).putInt(loc).array();
-            Function function = YourVisitor.funcTable.get(funcName);
             byte[] returnSlots;
             if (function.getReturnType() == Type.VOID) {
                 returnSlots = new byte[]{0,0,0,0};
@@ -40,29 +48,32 @@ public class FunctionDef {
                     paramSlot++;
                 }
             }
+            //if (function.getReturnType() != Type.VOID) paramSlot++;
             byte[] paramSlots =ByteBuffer.allocate(4).putInt(paramSlot).array();
             int locSlot = function.getLocSlot();
             byte[] locSlots = ByteBuffer.allocate(4).putInt(locSlot).array();
 
             InstructionQueue instructions = function.getInstructions();
-            List<InstructionAsm> instruction = new ArrayList<>();
+            List<InstructionAsm> instructionList = new ArrayList<>();
+            System.out.println(funcName);
             while (!instructions.isEmpty()) {
                 Instruction poll = instructions.poll();
+                System.out.println(poll);
                 String ins = poll.getInstruction().toString().toLowerCase();
                 if (poll.getObject() == null) {
-                    instruction.add(new InstructionAsm(Asm.byteMap.get(ins)));
+                    instructionList.add(new InstructionAsm(Asm.byteMap.get(ins)));
                 } else {
                     if (ins.equals("loca") || ins.equals("globa") || ins.equals("arga") || ins.equals("call")
                         || ins.equals("stackalloc") || ins.equals("br") || ins.equals("brtrue")) {
-                        instruction.add(new InstructionAsm(Asm.byteMap.get(ins),
+                        instructionList.add(new InstructionAsm(Asm.byteMap.get(ins),
                                 ByteBuffer.allocate(4).putInt((Integer) poll.getObject()).array()));
                     }
                     else {
                         if (poll.getObject() instanceof Long) {
-                            instruction.add(new InstructionAsm(Asm.byteMap.get(ins),
+                            instructionList.add(new InstructionAsm(Asm.byteMap.get(ins),
                                     ByteBuffer.allocate(8).putLong(0, (long)poll.getObject()).array(), true));
                         } else {
-                            instruction.add(new InstructionAsm(Asm.byteMap.get(ins),
+                            instructionList.add(new InstructionAsm(Asm.byteMap.get(ins),
                                     fourBytesToEight(ByteBuffer.allocate(4).putInt((Integer) poll.getObject()).array()), true));
                         }
 
@@ -70,9 +81,8 @@ public class FunctionDef {
                 }
 
             }
-            byte[] insSize = ByteBuffer.allocate(4).putInt(instruction.size()).array();
-
-            O0.functions.add(new FunctionDef(nameLocation, returnSlots, paramSlots, locSlots, instruction, insSize));
+            byte[] insSize = ByteBuffer.allocate(4).putInt(instructionList.size()).array();
+            O0.functions.add(new FunctionDef(nameLocation, returnSlots, paramSlots, locSlots, instructionList, insSize));
 
         }
     }

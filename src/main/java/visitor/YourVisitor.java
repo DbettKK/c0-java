@@ -24,7 +24,11 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     Stack<Boolean> isBrStack = new Stack<>();
     int breakIndex = -1, continueIndex = -1;
     public static List<Global> global = new ArrayList<>();
+    boolean isVoid = false;
 
+    int currentWhile = 0;
+    Map<Integer, Integer> whileBreakMap = new HashMap<>();
+    Map<Integer, Integer> whileContMap = new HashMap<>();
     @Override
     public Type visitProgram(C0Parser.ProgramContext ctx) {
         // 新建总符号表
@@ -59,6 +63,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
 
     @Override
     public Type visitFunction(C0Parser.FunctionContext ctx) {
+        isVoid = false;
         String funcName = ctx.IDENT().getText();
         global.add(new Global(funcName, GlobalType.FUNCTION));
         Type decType = Utils.getType(ctx.ty.getText());
@@ -75,6 +80,11 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         // 新建符号表 且将flag置为true
         currentTable = new SymbolTable(currentTable);
         currentQueue = currentFunction.getInstructions();
+        if (newFunction.getReturnType()!=Type.VOID) {
+            //System.out.println(currentFunction.getFuncName());
+            //currentQueue.add(new Instruction(InstructionEnum.ARGA, 0));
+            isVoid = true;
+        }
         isFuncBlock = true;
         if (ctx.functionParamList() != null) {
             visit(ctx.functionParamList());
@@ -157,10 +167,10 @@ public class YourVisitor extends C0BaseVisitor<Type> {
             index = currentQueue.getIndex();
             visit(ctx.elseStmt());
             currentQueue.change(index,
-                    new Instruction(InstructionEnum.BR, currentQueue.size() - index + 1));
+                    new Instruction(InstructionEnum.BR, currentQueue.size() - index));
         }
         // 这一步应该是不需要的
-        currentQueue.add(new Instruction(InstructionEnum.BR, 0));
+        //currentQueue.add(new Instruction(InstructionEnum.BR, 0));
         return Type.VOID;
     }
 
@@ -175,6 +185,9 @@ public class YourVisitor extends C0BaseVisitor<Type> {
 
     @Override
     public Type visitWhileStmt(C0Parser.WhileStmtContext ctx) {
+        currentWhile++;
+        whileBreakMap.put(currentWhile, 0);
+        whileContMap.put(currentWhile, 0);
         isBrStack.push(false);
         isContStack.push(false);
         //currentQueue.add(new Instruction(InstructionEnum.BR, 0));
@@ -184,19 +197,28 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         currentQueue.add(new Instruction(InstructionEnum.BR, 0));
         int index = currentQueue.getIndex();
         visit(ctx.blockStmt());
+        currentWhile--;
+        int breakNum = whileBreakMap.get(currentWhile+1);
+        int contNum = whileContMap.get(currentWhile+1);
+        whileBreakMap.put(currentWhile+1, 0);
+        whileContMap.put(currentWhile+1, 0);
         if (isBrStack.pop()) {
             //System.out.println(breakIndex);
             //System.out.println(currentQueue.size());
-            breakIndex = brStack.pop();
-            currentQueue.change(breakIndex,
-                    new Instruction(InstructionEnum.BR, currentQueue.size() - breakIndex + 1));
-            breakIndex = -1;
+            for (int i = 0; i < breakNum; i++) {
+                breakIndex = brStack.pop();
+                currentQueue.change(breakIndex,
+                        new Instruction(InstructionEnum.BR, currentQueue.size() - breakIndex + 1));
+                breakIndex = -1;
+            }
         }
         if (isContStack.pop()) {
-            continueIndex = contStack.pop();
-            currentQueue.change(continueIndex,
-                    new Instruction(InstructionEnum.BR, indexInit - continueIndex));
-            continueIndex = -1;
+            for (int i = 0; i < contNum; i++) {
+                continueIndex = contStack.pop();
+                currentQueue.change(continueIndex,
+                        new Instruction(InstructionEnum.BR, indexInit - continueIndex));
+                continueIndex = -1;
+            }
         }
 
         currentQueue.change(index,
@@ -220,12 +242,14 @@ public class YourVisitor extends C0BaseVisitor<Type> {
                 currentQueue.add(new Instruction(InstructionEnum.BR, 0));
                 breakIndex = currentQueue.getIndex();
                 brStack.push(breakIndex);
+                whileBreakMap.put(currentWhile, whileBreakMap.get(currentWhile)+1);
             } else if (statement.continueStmt() != null) {
                 isContStack.pop();
                 isContStack.push(true);
                 currentQueue.add(new Instruction(InstructionEnum.BR, 0));
                 continueIndex = currentQueue.getIndex();
                 contStack.push(continueIndex);
+                whileContMap.put(currentWhile, whileContMap.get(currentWhile)+1);
             }
             visit(statement);
         }
@@ -236,10 +260,15 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     @Override
     public Type visitReturnStmt(C0Parser.ReturnStmtContext ctx) {
         Type returnType = Type.VOID;
+        Type decType = currentFunction.getReturnType();
+        if (decType != Type.VOID) {
+            currentQueue.add(new Instruction(InstructionEnum.ARGA, 0));
+        }
         if (ctx.expr() != null) {
             returnType = visit(ctx.expr());
+            currentQueue.add(new Instruction(InstructionEnum.STORE64, null));
         }
-        Type decType = currentFunction.getReturnType();
+
         if (decType != returnType) {
             throw new RuntimeException("return-type-conflic");
         }
@@ -533,7 +562,8 @@ public class YourVisitor extends C0BaseVisitor<Type> {
                 }
             }
             if (locOffset == -1) throw new RuntimeException("locOffset-error");
-            currentQueue.add(new Instruction(InstructionEnum.ARGA, locOffset));
+            currentQueue.add(new Instruction(InstructionEnum.ARGA,
+                    !isVoid ? locOffset : locOffset + 1));
             currentQueue.add(new Instruction(InstructionEnum.LOAD64, null));
         }
     }
@@ -556,7 +586,8 @@ public class YourVisitor extends C0BaseVisitor<Type> {
                 }
             }
             if (locOffset == -1) throw new RuntimeException("locOffset-error");
-            currentQueue.add(new Instruction(InstructionEnum.ARGA, locOffset));
+            currentQueue.add(new Instruction(InstructionEnum.ARGA,
+                    !isVoid ? locOffset : locOffset + 1));
             //currentQueue.add(new Instruction(InstructionEnum.LOAD64, null));
         }
     }

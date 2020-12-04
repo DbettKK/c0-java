@@ -103,7 +103,7 @@ public class Asm {
 //        asm.init();
 //        stream.write(bytes);
 //        stream.close();
-        init();
+        File f = new File("D:\\你\\1");
 
     }
 

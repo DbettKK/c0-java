@@ -49,7 +49,7 @@ public class O0 {
             cnt+=4;
             System.arraycopy(func.locSlots, 0, out, cnt, 4);
             cnt+=4;
-            System.arraycopy(ByteBuffer.allocate(4).putInt(func.instruction.size()).array(), 0, out, cnt, 4);
+            System.arraycopy(func.intSize, 0, out, cnt, 4);
             cnt+=4;
             for (InstructionAsm ins : func.instruction) {
                 out[cnt] = ins.opcode;

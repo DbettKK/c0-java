@@ -37,8 +37,8 @@ public class GlobalDef {
                 );
             } else if (global.getType() == GlobalType.STRING) {
                 globalDef.isConst = 0x01;
-                int len = global.getName().getBytes().length;
-                byte[] item = global.getName().getBytes();
+                int len = global.getName().getBytes().length-2;
+                byte[] item = global.getName().substring(1, global.getName().length()-1).getBytes();
                 globalDef.value = new Array(
                         ByteBuffer.allocate(4).putInt(len).array(), item
                 );
