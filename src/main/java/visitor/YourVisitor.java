@@ -28,6 +28,8 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     public static List<Global> global = new ArrayList<>();
     boolean isVoid = false;
 
+
+
     int currentWhile = 0;
     Map<Integer, Integer> whileBreakMap = new HashMap<>();
     Map<Integer, Integer> whileContMap = new HashMap<>();
@@ -185,9 +187,13 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         if (ctx.elseStmt() != null) {
             currentQueue.add(new Instruction(InstructionEnum.BR, 0));
             index = currentQueue.getIndex();
-            visit(ctx.elseStmt());
+            if (ctx.elseStmt().ifStmt() != null) {
+                visit(ctx.elseStmt().ifStmt());
+            }else if (ctx.elseStmt().blockStmt() != null) {
+                visit(ctx.elseStmt().blockStmt());
+            }
             currentQueue.change(index,
-                    new Instruction(InstructionEnum.BR, currentQueue.size() - index + 1));
+                    new Instruction(InstructionEnum.BR, currentQueue.size() - index));
         }
         // 这一步应该是不需要的
         //currentQueue.add(new Instruction(InstructionEnum.BR, 0));
@@ -196,10 +202,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
 
     @Override
     public Type visitElseStmt(C0Parser.ElseStmtContext ctx) {
-        if (ctx.ifStmt() != null)
-            visit(ctx.ifStmt());
-        else if (ctx.blockStmt() != null)
-            visit(ctx.blockStmt());
+
         return Type.VOID;
     }
 
@@ -216,7 +219,9 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         currentQueue.add(new Instruction(InstructionEnum.BRTRUE, 1));
         currentQueue.add(new Instruction(InstructionEnum.BR, 0));
         int index = currentQueue.getIndex();
+
         visit(ctx.blockStmt());
+
         currentWhile--;
         int breakNum = whileBreakMap.get(currentWhile+1);
         int contNum = whileContMap.get(currentWhile+1);
@@ -236,7 +241,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
             for (int i = 0; i < contNum; i++) {
                 continueIndex = contStack.pop();
                 currentQueue.change(continueIndex,
-                        new Instruction(InstructionEnum.BR, indexInit - continueIndex - 1));
+                        new Instruction(InstructionEnum.BR, indexInit - continueIndex));
                 continueIndex = -1;
             }
         }
