@@ -11,6 +11,7 @@ public class Global {
     private String name;
     private GlobalType type;
     private String value;
+    private int offset = 0;
 
 //    public void add(Global global) {
 //        switch (global.getType()) {
@@ -45,6 +46,20 @@ public class Global {
         this.name = name;
         this.type = type;
         this.value = value;
+    }
+
+    public Global(String name, GlobalType type, int offset) {
+        this.name = name;
+        this.type = type;
+        this.offset = offset;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 
     public String getName() {

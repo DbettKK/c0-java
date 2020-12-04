@@ -26,6 +26,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     Stack<Boolean> isBrStack = new Stack<>();
     int breakIndex = -1, continueIndex = -1;
     public static List<Global> global = new ArrayList<>();
+    int globalOffset = 0;
     boolean isVoid = false;
 
 
@@ -33,10 +34,11 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     int currentWhile = 0;
     Map<Integer, Integer> whileBreakMap = new HashMap<>();
     Map<Integer, Integer> whileContMap = new HashMap<>();
+
     @Override
     public Type visitProgram(C0Parser.ProgramContext ctx) {
         // 新建总符号表
-        global.add(new Global("_start", GlobalType.FUNCTION));
+        global.add(new Global("_start", GlobalType.FUNCTION, globalOffset++));
         currentTable = new SymbolTable(null);
         // 新建_start函数
         Function _start = new Function("_start", new ArrayList<>(), Type.VOID, funcOffset++);
@@ -71,7 +73,6 @@ public class YourVisitor extends C0BaseVisitor<Type> {
             }
         }
         global = newGlobal;
-
         /*for (String s : funcTable.keySet()) {
             System.out.println("FUNC: " + s);
             InstructionQueue instructions = funcTable.get(s).getInstructions();
@@ -704,7 +705,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     @Override
     public Type visitPutStr(C0Parser.PutStrContext ctx) {
         String str = ctx.str().getText();
-        System.out.println(str);
+        //System.out.println(str);
         global.add(new Global(StringEscapeUtils.unescapeJava(str), GlobalType.STRING));
         currentQueue.add(new Instruction(InstructionEnum.PUSH, global.size() - 1));
         currentQueue.add(new Instruction(InstructionEnum.PRINTS, null));
@@ -734,5 +735,13 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         }
 
 
+    }
+    public int getGlobalIndex(String name) {
+        for (int i = 0; i < global.size(); i++) {
+            if (global.get(i).getName().equals(name)) {
+                return i;
+            }
+        }
+        throw new RuntimeException("");
     }
 }
