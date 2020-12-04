@@ -449,14 +449,4 @@ public interface C0Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitStr(C0Parser.StrContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link C0Parser#character}.
-	 * @param ctx the parse tree
-	 */
-	void enterCharacter(C0Parser.CharacterContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link C0Parser#character}.
-	 * @param ctx the parse tree
-	 */
-	void exitCharacter(C0Parser.CharacterContext ctx);
 }

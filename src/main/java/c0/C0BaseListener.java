@@ -493,18 +493,6 @@ public class C0BaseListener implements C0Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitStr(C0Parser.StrContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterCharacter(C0Parser.CharacterContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitCharacter(C0Parser.CharacterContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

@@ -272,10 +272,4 @@ public interface C0Visitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitStr(C0Parser.StrContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link C0Parser#character}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitCharacter(C0Parser.CharacterContext ctx);
 }

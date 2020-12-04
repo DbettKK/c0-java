@@ -181,7 +181,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         int index = currentQueue.getIndex();
         visit(ctx.blockStmt());
         currentQueue.change(index,
-                new Instruction(InstructionEnum.BR, currentQueue.size() - index + 1));
+                new Instruction(InstructionEnum.BR, currentQueue.size() - index));
         if (ctx.elseStmt() != null) {
             currentQueue.add(new Instruction(InstructionEnum.BR, 0));
             index = currentQueue.getIndex();
@@ -458,7 +458,8 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     public Type visitChar(C0Parser.CharContext ctx) {
         String c = ctx.getText();
         c = StringEscapeUtils.unescapeJava(c);
-        int value = c.charAt(0);
+        int value = c.charAt(1);
+        //System.out.println(value);
         currentQueue.add(new Instruction(InstructionEnum.PUSH, value));
         return Type.INT;
     }
