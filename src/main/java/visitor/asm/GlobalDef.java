@@ -1,12 +1,10 @@
 package visitor.asm;
 
-import visitor.Global;
-import visitor.GlobalType;
+import visitor.global.Global;
+import visitor.global.GlobalType;
 import visitor.YourVisitor;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GlobalDef {
     byte isConst;

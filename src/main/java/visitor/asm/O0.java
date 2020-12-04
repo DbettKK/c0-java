@@ -1,8 +1,5 @@
 package visitor.asm;
 
-import visitor.Asm;
-import visitor.Global;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +18,6 @@ public class O0 {
     static int cnt = 0;
 
     public static byte[] init() {
-        Asm.init();
         GlobalDef.getGlobal();
         FunctionDef.getFunc();
         System.arraycopy(magic, 0, out, 0, 4);

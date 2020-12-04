@@ -1,14 +1,15 @@
 package visitor.asm;
 
-import listener.utils.Function;
-import listener.utils.FunctionParam;
-import listener.utils.Type;
+import visitor.function.Function;
+import visitor.function.FunctionParam;
+import visitor.utils.Type;
 import visitor.*;
+import visitor.instruction.Instruction;
+import visitor.instruction.InstructionQueue;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 public class FunctionDef {
@@ -68,19 +69,19 @@ public class FunctionDef {
                 System.out.println(cnt++ + ": " + poll);
                 String ins = poll.getInstruction().toString().toLowerCase();
                 if (poll.getObject() == null) {
-                    instructionList.add(new InstructionAsm(Asm.byteMap.get(ins)));
+                    instructionList.add(new InstructionAsm(Asm.getInitMap().get(ins)));
                 } else {
                     if (ins.equals("loca") || ins.equals("globa") || ins.equals("arga") || ins.equals("call")
                             || ins.equals("stackalloc") || ins.equals("br") || ins.equals("brtrue")) {
-                        instructionList.add(new InstructionAsm(Asm.byteMap.get(ins),
+                        instructionList.add(new InstructionAsm(Asm.getInitMap().get(ins),
                                 ByteBuffer.allocate(4).putInt((Integer) poll.getObject()).array()));
                     }
                     else {
                         if (poll.getObject() instanceof Long) {
-                            instructionList.add(new InstructionAsm(Asm.byteMap.get(ins),
+                            instructionList.add(new InstructionAsm(Asm.getInitMap().get(ins),
                                     ByteBuffer.allocate(8).putLong(0, (long)poll.getObject()).array(), true));
                         } else {
-                            instructionList.add(new InstructionAsm(Asm.byteMap.get(ins),
+                            instructionList.add(new InstructionAsm(Asm.getInitMap().get(ins),
                                     fourBytesToEight(ByteBuffer.allocate(4).putInt((Integer) poll.getObject()).array()), true));
                         }
 

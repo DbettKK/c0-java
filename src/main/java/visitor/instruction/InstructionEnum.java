@@ -1,0 +1,10 @@
+package visitor.instruction;
+
+/**
+ * ָ�
+ */
+public enum InstructionEnum {
+    PUSH, NEGI, NEGF, ADDI, ADDF, SUBI, SUBF, MULI, MULF, DIVI, DIVF, SETGT, SETLT, NOT,
+    CMPI, CMPF, ITOF, FTOI, RET, LOAD64, STORE64, GLOBA, LOCA, ARGA, CALL, STACKALLOC,
+    SCANI, SCANF, SCANC, PRINTI, PRINTF, PRINTC, PRINTS, PRINTLN, BRTRUE, BR
+}

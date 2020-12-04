@@ -1,0 +1,47 @@
+package trying.miniplc0java;
+
+import trying.miniplc0java.tokenizer.StringIter;
+import trying.miniplc0java.tokenizer.Tokenizer;
+
+import java.io.FileNotFoundException;
+import java.util.*;
+
+public class TokenMain {
+    private static Tokenizer tokenize(StringIter iter) {
+        return new Tokenizer(iter);
+    }
+
+    public static void main(String[] args) throws FileNotFoundException {
+        /*String path = "";
+        //String path = "D:\\大学\\大三上\\编译\\作业\\miniplc0-java\\build\\libs\\in.txt";
+        File f = new File(path);
+        Scanner scanner = new Scanner(new FileReader(f));
+        StringIter iter = new StringIter(scanner);
+        var tokenizer = tokenize(iter);
+        List<Token> tokens = new ArrayList<Token>();
+        try {
+            while (true) {
+                Token token = tokenizer.nextToken();
+                if (token.getTokenType().equals(TokenType.EOF)) {
+                    break;
+                }
+                tokens.add(token);
+            }
+        } catch (Exception e) {
+            // 遇到错误不输出，直接退出
+            e.printStackTrace();
+            System.exit(0);
+        }
+        for (Token token : tokens) {
+            System.out.println(token.toString());
+        }*/
+        Queue<String> strings = new ArrayDeque<>();
+        strings.add("(");
+        strings.add("(");
+        strings.add(")");
+        System.out.println(strings);
+        System.out.println(strings.remove("4"));;
+        System.out.println(strings.remove("("));;
+        System.out.println(strings);
+    }
+}

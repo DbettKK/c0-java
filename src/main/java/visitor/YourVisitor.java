@@ -2,36 +2,42 @@ package visitor;
 
 import c0.C0BaseVisitor;
 import c0.C0Parser;
-import listener.utils.*;
+import visitor.function.Function;
+import visitor.function.FunctionParam;
+import visitor.global.Global;
+import visitor.global.GlobalType;
+import visitor.instruction.Instruction;
+import visitor.instruction.InstructionEnum;
+import visitor.instruction.InstructionQueue;
+import visitor.table.SymbolEntry;
+import visitor.table.SymbolTable;
+import visitor.utils.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
 import java.util.*;
 
 public class YourVisitor extends C0BaseVisitor<Type> {
-    //Queue<Instruction> currentQueue = new ArrayDeque<>();
-    //SymbolTable table = new SymbolTable(null, "");
-    InstructionQueue currentQueue;
-    SymbolTable currentTable;
-    Function currentFunction;
+    private InstructionQueue currentQueue;
+    private SymbolTable currentTable;
+    private Function currentFunction;
     public static Map<String, Function> funcTable = new HashMap<>();
-    int funcOffset = 0;
-    Map<String, Type> returnMap = new HashMap<>();
-    boolean isFuncBlock, isBreak, isContinue;
-    Stack<Integer> brStack = new Stack<>();
-    Stack<Integer> contStack = new Stack<>();
-    Stack<Boolean> isContStack = new Stack<>();
-    Stack<Boolean> isBrStack = new Stack<>();
-    int breakIndex = -1, continueIndex = -1;
+    private int funcOffset = 0;
+    private Map<String, Type> returnMap = new HashMap<>();
+    private boolean isFuncBlock, isBreak, isContinue;
+    private Stack<Integer> brStack = new Stack<>();
+    private Stack<Integer> contStack = new Stack<>();
+    private Stack<Boolean> isContStack = new Stack<>();
+    private Stack<Boolean> isBrStack = new Stack<>();
+    private int breakIndex = -1, continueIndex = -1;
     public static List<Global> global = new ArrayList<>();
-    int globalOffset = 0;
-    boolean isVoid = false;
+    private int globalOffset = 0;
+    private boolean isVoid = false;
 
-    int currentWhile = 0;
-    Map<Integer, Integer> whileBreakMap = new HashMap<>();
-    Map<Integer, Integer> whileContMap = new HashMap<>();
+    private int currentWhile = 0;
+    private Map<Integer, Integer> whileBreakMap = new HashMap<>();
+    private Map<Integer, Integer> whileContMap = new HashMap<>();
 
     @Override
     public Type visitProgram(C0Parser.ProgramContext ctx) {
@@ -47,39 +53,12 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         for (ParseTree child : ctx.children) {
             visit(child);
         }
-
         InstructionQueue startQueue = funcTable.get("_start").getInstructions();
         Function main = funcTable.get("main");
         int v = main.getReturnType() == Type.VOID ? 0 : 1;
         startQueue.add(new Instruction(InstructionEnum.STACKALLOC, v));
         startQueue.add(new Instruction(InstructionEnum.CALL,
                 funcTable.get("main").getOffset()));
-        System.out.println(global);
-        List<Global> newGlobal = new ArrayList<>();
-        for (Global g : global) {
-            if (g.getType() == GlobalType.VAR || g.getType() == GlobalType.CONST) {
-                newGlobal.add(g);
-            }
-        }
-        for (Global g : global) {
-            if (g.getType() == GlobalType.FUNCTION) {
-                newGlobal.add(g);
-            }
-        }
-        for (Global g : global) {
-            if (g.getType() == GlobalType.STRING) {
-                newGlobal.add(g);
-            }
-        }
-        //global = newGlobal;
-        /*for (String s : funcTable.keySet()) {
-            System.out.println("FUNC: " + s);
-            InstructionQueue instructions = funcTable.get(s).getInstructions();
-            while (!instructions.isEmpty()) {
-                System.out.println(instructions.poll());
-            }
-            System.out.println("----------------------------");
-        }*/
         return Type.VOID;
     }
 
@@ -88,7 +67,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         isVoid = false;
         String funcName = ctx.IDENT().getText();
         global.add(new Global(funcName, GlobalType.FUNCTION, globalOffset++));
-        Type decType = Utils.getType(ctx.ty.getText());
+        Type decType = getType(ctx.ty.getText());
         if (funcTable.get(funcName) != null) {
             throw new RuntimeException("duplicated-func-declare");
         }
@@ -151,7 +130,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
             boolean isConst = false;
             if (param.isConst != null) isConst = true;
             String paramName = param.IDENT().getText();
-            Type paramType = Utils.getType(param.ty.getText());
+            Type paramType = getType(param.ty.getText());
             functionParamList.add(new FunctionParam(isConst, paramName, paramType, paramOffset++));
             currentTable.put(paramName, new SymbolEntry(isConst, true, false,
                     false, currentTable.getOffset(), paramType));
@@ -341,16 +320,16 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         }
         if (ctx.ASSIGN() == null) {
             SymbolEntry entry = new SymbolEntry(false, false, isGlobal, !isGlobal,
-                    currentTable.getOffset(), Utils.getType(ctx.ty.getText()));
+                    currentTable.getOffset(), getType(ctx.ty.getText()));
             if (!isGlobal) entry.setLocalVarOffset(localVarOffset);
             currentTable.put(ident, entry);
 
         } else {
             Type let = visit(ctx.expr());
-            if (let != Utils.getType(ctx.ty.getText()))
+            if (let != getType(ctx.ty.getText()))
                 throw new RuntimeException("let-declare-type-conflict");
             SymbolEntry entry = new SymbolEntry(false, false, isGlobal, !isGlobal,
-                    currentTable.getOffset(), Utils.getType(ctx.ty.getText()));
+                    currentTable.getOffset(), getType(ctx.ty.getText()));
             if (!isGlobal) entry.setLocalVarOffset(localVarOffset);
             currentTable.put(ident, entry);
             currentQueue.add(new Instruction(InstructionEnum.STORE64, null));
@@ -379,11 +358,11 @@ public class YourVisitor extends C0BaseVisitor<Type> {
             throw new RuntimeException("duplicated-const-declare");
         }
         Type constVar = visit(ctx.expr());
-        if (constVar != Utils.getType(ctx.ty.getText()))
+        if (constVar != getType(ctx.ty.getText()))
             throw new RuntimeException("const-declare-type-conflict");
 
         SymbolEntry entry = new SymbolEntry(true, false, isGlobal, !isGlobal,
-                currentTable.getOffset(), Utils.getType(ctx.ty.getText()));
+                currentTable.getOffset(), getType(ctx.ty.getText()));
         if (!isGlobal) entry.setLocalVarOffset(localVarOffset);
         currentTable.put(ident, entry);
         currentQueue.add(new Instruction(InstructionEnum.STORE64, null));
@@ -429,7 +408,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
     @Override
     public Type visitAsExpr(C0Parser.AsExprContext ctx) {
         Type source = visit(ctx.expr());
-        Type transTo = Utils.getType(ctx.ty.getText());
+        Type transTo = getType(ctx.ty.getText());
         return intDoubleTransfer(source, transTo);
     }
 
@@ -751,5 +730,15 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         }
         System.out.println(name);
         throw new RuntimeException("");
+    }
+
+    public Type getType(String s) {
+        if (s.equals("int")) {
+            return Type.INT;
+        } else if (s.equals("double")) {
+            return Type.DOUBLE;
+        }
+        return Type.VOID;
+
     }
 }
