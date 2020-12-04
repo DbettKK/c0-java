@@ -143,6 +143,13 @@ public interface C0Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFuncLabelExpr(C0Parser.FuncLabelExprContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code char}
+	 * labeled alternative in {@link C0Parser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitChar(C0Parser.CharContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code nagExpr}
 	 * labeled alternative in {@link C0Parser#expr}.
 	 * @param ctx the parse tree

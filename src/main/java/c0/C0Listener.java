@@ -228,6 +228,18 @@ public interface C0Listener extends ParseTreeListener {
 	 */
 	void exitFuncLabelExpr(C0Parser.FuncLabelExprContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code char}
+	 * labeled alternative in {@link C0Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterChar(C0Parser.CharContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code char}
+	 * labeled alternative in {@link C0Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitChar(C0Parser.CharContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code nagExpr}
 	 * labeled alternative in {@link C0Parser#expr}.
 	 * @param ctx the parse tree

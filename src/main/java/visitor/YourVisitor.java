@@ -5,6 +5,7 @@ import c0.C0Parser;
 import listener.utils.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
 import java.util.*;
@@ -451,6 +452,15 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         }
         identSpecify(ident, entry);
         return entry.getType();
+    }
+
+    @Override
+    public Type visitChar(C0Parser.CharContext ctx) {
+        String c = ctx.getText();
+        c = StringEscapeUtils.unescapeJava(c);
+        int value = c.charAt(0);
+        currentQueue.add(new Instruction(InstructionEnum.PUSH, value));
+        return Type.INT;
     }
 
     @Override
