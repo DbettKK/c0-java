@@ -484,9 +484,9 @@ public class YourVisitor extends C0BaseVisitor<Type> {
 
     @Override
     public Type visitUint(C0Parser.UintContext ctx) {
-        int value;
+        long value;
         try {
-            value = Integer.parseInt(ctx.UINT().getText());
+            value = Long.parseLong(ctx.UINT().getText());
         } catch (Exception e) {
             value = ctx.UINT().getText().charAt(0);
         }
