@@ -127,6 +127,14 @@ public class YourVisitor extends C0BaseVisitor<Type> {
             }
             returnMap.put(funcName, Type.VOID);
             currentQueue.add(new Instruction(InstructionEnum.RET, null));
+        } else {
+            if (newFunction.getReturnType() == Type.VOID) {
+                if (currentQueue.peekLast().getInstruction()!=InstructionEnum.RET) {
+                    returnMap.put(funcName, Type.VOID);
+                    currentQueue.add(new Instruction(InstructionEnum.RET, null));
+                }
+
+            }
         }
         currentFunction = funcTable.get(tmp);
         currentQueue = currentFunction.getInstructions();
