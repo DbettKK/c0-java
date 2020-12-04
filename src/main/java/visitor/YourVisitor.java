@@ -53,7 +53,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         int v = main.getReturnType() == Type.VOID ? 0 : 1;
         startQueue.add(new Instruction(InstructionEnum.STACKALLOC, v));
         startQueue.add(new Instruction(InstructionEnum.CALL,
-                global.get(getGlobalIndex("main")).getOffset()));
+                funcTable.get("main").getOffset()));
         System.out.println(global);
         List<Global> newGlobal = new ArrayList<>();
         for (Global g : global) {
@@ -179,7 +179,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
 
         }
         currentQueue.add(new Instruction(InstructionEnum.CALL,
-                global.get(getGlobalIndex(callName)).getOffset()));
+                funcTable.get(callName).getOffset()));
 
         return callFunction.getReturnType();
     }
@@ -713,7 +713,8 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         String str = ctx.str().getText();
         //System.out.println(str);
         global.add(new Global(StringEscapeUtils.unescapeJava(str), GlobalType.STRING, globalOffset++));
-        currentQueue.add(new Instruction(InstructionEnum.PUSH, globalOffset - 1));
+        currentQueue.add(new Instruction(InstructionEnum.PUSH,
+                global.get(getGlobalIndex(StringEscapeUtils.unescapeJava(str))).getOffset()));
         currentQueue.add(new Instruction(InstructionEnum.PRINTS, null));
         return Type.VOID;
     }

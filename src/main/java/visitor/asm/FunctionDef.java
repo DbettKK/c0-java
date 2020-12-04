@@ -7,6 +7,8 @@ import visitor.*;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class FunctionDef {
@@ -25,15 +27,20 @@ public class FunctionDef {
 
     public static void getFunc() {
         //int label = 0;
-        Function[] functionList = new Function[YourVisitor.funcTable.keySet().size()];
-        for (String funcName : YourVisitor.funcTable.keySet()) {
-            Function function =  YourVisitor.funcTable.get(funcName);
-            functionList[function.getOffset()] = function;
+        List<Function> tmpFuncList = new ArrayList<>();
+        List<FunctionDef> tmpList = new ArrayList<>();
+        for (String funcName : YourVisitor.funcTable.keySet()){
+            tmpFuncList.add(YourVisitor.funcTable.get(funcName));
         }
+        Collections.sort(tmpFuncList , (Function b1, Function b2) ->
+                b1.getOffset() - b2.getOffset());
+        System.out.println(tmpFuncList);
 
-        for (Function function : functionList) {
+
+        for (Function function : tmpFuncList) {
             String funcName = function.getFuncName();
             int loc = YourVisitor.global.get(getIndex(funcName)).getOffset();
+            System.out.println(funcName + ":" + loc);
             byte[] nameLocation = ByteBuffer.allocate(4).putInt(loc).array();
             byte[] returnSlots;
             if (function.getReturnType() == Type.VOID) {
@@ -64,7 +71,7 @@ public class FunctionDef {
                     instructionList.add(new InstructionAsm(Asm.byteMap.get(ins)));
                 } else {
                     if (ins.equals("loca") || ins.equals("globa") || ins.equals("arga") || ins.equals("call")
-                        || ins.equals("stackalloc") || ins.equals("br") || ins.equals("brtrue")) {
+                            || ins.equals("stackalloc") || ins.equals("br") || ins.equals("brtrue")) {
                         instructionList.add(new InstructionAsm(Asm.byteMap.get(ins),
                                 ByteBuffer.allocate(4).putInt((Integer) poll.getObject()).array()));
                     }
@@ -79,11 +86,10 @@ public class FunctionDef {
 
                     }
                 }
-
             }
             byte[] insSize = ByteBuffer.allocate(4).putInt(instructionList.size()).array();
-            O0.functions.add(new FunctionDef(nameLocation, returnSlots, paramSlots, locSlots, instructionList, insSize));
-
+            O0.functions.add(new FunctionDef(nameLocation, returnSlots,
+                    paramSlots, locSlots, instructionList, insSize));
         }
     }
 
@@ -105,6 +111,8 @@ public class FunctionDef {
         this.instruction = instruction;
         this.intSize = insSize;
     }
+
+
 
     public static byte[] fourBytesToEight(byte[] four) {
         byte[] bytes = new byte[8];
