@@ -181,19 +181,24 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         currentQueue.add(new Instruction(InstructionEnum.BRTRUE, 1));
         currentQueue.add(new Instruction(InstructionEnum.BR, 0));
         int index = currentQueue.getIndex();
+        //System.out.println(index);
         visit(ctx.blockStmt());
+        //System.out.println(index);
+        int add = ctx.elseStmt()!=null ? 1 : 0;
         currentQueue.change(index,
-                new Instruction(InstructionEnum.BR, currentQueue.size() - index + 1));
+                new Instruction(InstructionEnum.BR, currentQueue.size() - index + add));
         if (ctx.elseStmt() != null) {
             currentQueue.add(new Instruction(InstructionEnum.BR, 0));
-            index = currentQueue.getIndex();
+            int index1 = currentQueue.getIndex();
+            System.out.println(index1);
             if (ctx.elseStmt().ifStmt() != null) {
                 visit(ctx.elseStmt().ifStmt());
             }else if (ctx.elseStmt().blockStmt() != null) {
                 visit(ctx.elseStmt().blockStmt());
             }
-            currentQueue.change(index,
-                    new Instruction(InstructionEnum.BR, currentQueue.size() - index));
+            System.out.println(index1);
+            currentQueue.change(index1,
+                    new Instruction(InstructionEnum.BR, currentQueue.size() - index1));
         }
         // 这一步应该是不需要的
         //currentQueue.add(new Instruction(InstructionEnum.BR, 0));
