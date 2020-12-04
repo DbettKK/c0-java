@@ -181,13 +181,13 @@ public class YourVisitor extends C0BaseVisitor<Type> {
         int index = currentQueue.getIndex();
         visit(ctx.blockStmt());
         currentQueue.change(index,
-                new Instruction(InstructionEnum.BR, currentQueue.size() - index));
+                new Instruction(InstructionEnum.BR, currentQueue.size() - index + 1));
         if (ctx.elseStmt() != null) {
             currentQueue.add(new Instruction(InstructionEnum.BR, 0));
             index = currentQueue.getIndex();
             visit(ctx.elseStmt());
             currentQueue.change(index,
-                    new Instruction(InstructionEnum.BR, currentQueue.size() - index));
+                    new Instruction(InstructionEnum.BR, currentQueue.size() - index + 1));
         }
         // 这一步应该是不需要的
         //currentQueue.add(new Instruction(InstructionEnum.BR, 0));
@@ -236,7 +236,7 @@ public class YourVisitor extends C0BaseVisitor<Type> {
             for (int i = 0; i < contNum; i++) {
                 continueIndex = contStack.pop();
                 currentQueue.change(continueIndex,
-                        new Instruction(InstructionEnum.BR, indexInit - continueIndex));
+                        new Instruction(InstructionEnum.BR, indexInit - continueIndex - 1));
                 continueIndex = -1;
             }
         }
