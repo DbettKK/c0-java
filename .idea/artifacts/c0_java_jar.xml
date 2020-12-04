@@ -3,6 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/c0_java_jar</output-path>
     <root id="archive" name="c0-java.jar">
       <element id="module-output" name="c0-java" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../../../../maven/repository/commons-lang/commons-lang/2.6/commons-lang-2.6.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/../../../../../maven/repository/net/sourceforge/argparse4j/argparse4j/0.8.1/argparse4j-0.8.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/../../../../../maven/repository/org/antlr/antlr4-runtime/4.8/antlr4-runtime-4.8.jar" path-in-jar="/" />
     </root>
